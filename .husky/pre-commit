@@ -1,0 +1,3 @@
+bun run lint-staged
+bun run syncpack:fix
+bun run syncpack:format

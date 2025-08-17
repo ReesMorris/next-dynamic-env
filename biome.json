@@ -1,0 +1,152 @@
+{
+  "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/.storybook/styles.css",
+      "!**/.turbo",
+      "!**/.yarn",
+      "!**/build",
+      "!**/cache",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/out",
+      "!**/public",
+      "!**/storybook-static",
+      "!**/styled-system",
+      "!**/yarn.lock"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSpacing": true,
+    "includes": ["**", "!**/node_modules", "!**/yarn.lock", "!**/build"]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": ["@/mocks/**", "@/**"]
+          }
+        }
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off",
+        "noUselessStringConcat": "error",
+        "noVoid": "error",
+        "useSimplifiedLogicExpression": "off",
+        "noUselessEscapeInRegex": "error",
+        "noUselessStringRaw": "error"
+      },
+      "correctness": {
+        "noUnusedImports": "warn",
+        "noUnusedPrivateClassMembers": "warn",
+        "noUnusedVariables": "warn",
+        "useHookAtTopLevel": "error",
+        "useUniqueElementIds": "warn"
+      },
+      "nursery": {
+        "noSecrets": "off",
+        "useExplicitType": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "warn",
+        "noNamespaceImport": "error"
+      },
+      "style": {
+        "noDoneCallback": "warn",
+        "noNamespace": "error",
+        "noNegationElse": "warn",
+        "noUselessElse": "off",
+        "noYodaExpression": "error",
+        "useBlockStatements": "error",
+        "useCollapsedElseIf": "warn",
+        "useConsistentArrayType": {
+          "level": "warn",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useDefaultSwitchClause": "warn",
+        "useExplicitLengthCheck": "warn",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["kebab-case"]
+          }
+        },
+        "useForOf": "warn",
+        "useShorthandAssign": "warn",
+        "useThrowNewError": "warn",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "useArrayLiterals": "error",
+        "noNestedTernary": "warn",
+        "noSubstr": "error",
+        "useAtIndex": "warn",
+        "useCollapsedIf": "warn",
+        "useTrimStartEnd": "warn"
+      },
+      "suspicious": {
+        "noEmptyBlockStatements": "warn",
+        "noEvolvingTypes": "warn",
+        "noMisplacedAssertion": "warn",
+        "useAwait": "warn",
+        "useNumberToFixedDigitsArgument": "warn",
+        "noDuplicateElseIf": "warn",
+        "noIrregularWhitespace": "error",
+        "noOctalEscape": "error",
+        "noTemplateCurlyInString": "error",
+        "useGuardForIn": "error"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "error",
+        "useAriaPropsSupportedByRole": "warn",
+        "useValidAutocomplete": "warn"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "single",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "none",
+      "semicolons": "always",
+      "arrowParentheses": "asNeeded",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  }
+}
