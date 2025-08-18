@@ -1,4 +1,4 @@
-import { createEnv } from 'next-dynamic-env';
+import { createDynamicEnv } from 'next-dynamic-env';
 
 // Define all environment variables you want to be available in the client
 export const RUNTIME_ENV = {
@@ -7,4 +7,4 @@ export const RUNTIME_ENV = {
 } as const;
 
 // Create the typed env function
-export const env = createEnv(RUNTIME_ENV);
+export const env = createDynamicEnv(RUNTIME_ENV);

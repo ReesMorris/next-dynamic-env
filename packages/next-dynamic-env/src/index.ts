@@ -1,4 +1,4 @@
-export { createEnv } from './create-env';
+export { createDynamicEnv } from './create-dynamic-env';
 export type { DynamicEnvScriptProps } from './dynamic-env-script';
 export { DynamicEnvScript } from './dynamic-env-script';
 export type { EnvVars } from './types';

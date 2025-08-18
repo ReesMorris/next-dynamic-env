@@ -1,4 +1,4 @@
-import { env } from '@/env.runtime';
+import { env } from '@/dynamic-env';
 import { waitForEnv } from 'next-dynamic-env';
 
 (async () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { env } from '@/env.runtime';
+import { env } from '@/dynamic-env';
 
 export const Client = () => {
   return (

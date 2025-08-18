@@ -14,13 +14,13 @@ import { isBrowser } from '../utils';
  *   APP_NAME: process.env.APP_NAME,
  * } as const;
  *
- * export const env = createEnv(RUNTIME_ENV);
+ * export const env = createDynamicEnv(RUNTIME_ENV);
  *
  * // Usage
  * const apiUrl = env('API_URL');
  * ```
  */
-export const createEnv = <T extends EnvVars>(envVars: T) => {
+export const createDynamicEnv = <T extends EnvVars>(envVars: T) => {
   return function env<K extends keyof T>(key: K): T[K] {
     // Server-side: always use the passed envVars
     if (!isBrowser()) {

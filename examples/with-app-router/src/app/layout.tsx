@@ -1,4 +1,4 @@
-import { RUNTIME_ENV } from '@/env.runtime';
+import { RUNTIME_ENV } from '@/dynamic-env';
 import { DynamicEnvScript } from 'next-dynamic-env';
 import './globals.css';
 
