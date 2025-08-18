@@ -1,5 +1,5 @@
 import { RUNTIME_ENV } from '@/env.runtime';
-import { PublicEnvScript } from 'next-public-env';
+import { DynamicEnvScript } from 'next-dynamic-env';
 import './globals.css';
 
 interface LayoutProps {
@@ -10,7 +10,7 @@ export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang='en'>
       <head>
-        <PublicEnvScript env={RUNTIME_ENV} />
+        <DynamicEnvScript env={RUNTIME_ENV} />
       </head>
       <body>{children}</body>
     </html>

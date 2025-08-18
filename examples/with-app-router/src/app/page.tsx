@@ -5,7 +5,7 @@ const HomePage = () => {
   return (
     <main>
       <div className='container'>
-        <h1>🚀 Next Public Env Demo</h1>
+        <h1>🚀 Next Dynamic Env Demo</h1>
         <p>
           This example demonstrates runtime environment variables using the Next
           App Router. The examples below show how to access these variables in

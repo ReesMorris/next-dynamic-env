@@ -1,4 +1,4 @@
-import { createEnv } from 'next-public-env';
+import { createEnv } from 'next-dynamic-env';
 
 // Define all environment variables you want to be available in the client
 export const RUNTIME_ENV = {

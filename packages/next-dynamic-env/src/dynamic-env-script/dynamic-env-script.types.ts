@@ -1,9 +1,9 @@
 import type { EnvVars } from '../types';
 
-export interface PublicEnvScriptProps<T extends EnvVars = EnvVars> {
+export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
   /**
    * The ID of the script tag
-   * @default 'next-public-env-script'
+   * @default 'next-dynamic-env-script'
    */
   id?: string;
 

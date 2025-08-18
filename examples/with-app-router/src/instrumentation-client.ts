@@ -1,5 +1,5 @@
 import { env } from '@/env.runtime';
-import { waitForEnv } from 'next-public-env';
+import { waitForEnv } from 'next-dynamic-env';
 
 (async () => {
   // This will be undefined

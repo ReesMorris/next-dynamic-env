@@ -1,6 +1,6 @@
 import Script from 'next/script';
 import type { EnvVars } from '../types';
-import type { PublicEnvScriptProps } from './public-env-script.types';
+import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
 
 /**
  * Injects environment variables into the client-side window object
@@ -9,13 +9,13 @@ import type { PublicEnvScriptProps } from './public-env-script.types';
  * @example
  * ```tsx
  * // app/layout.tsx
- * import { PublicEnvScript } from 'next-public-env';
+ * import { DynamicEnvScript } from 'next-dynamic-env';
  *
  * export default function RootLayout({ children }) {
  *   return (
  *     <html>
  *       <head>
- *         <PublicEnvScript env={RUNTIME_ENV} />
+ *         <DynamicEnvScript env={RUNTIME_ENV} />
  *       </head>
  *       <body>{children}</body>
  *     </html>
@@ -23,12 +23,12 @@ import type { PublicEnvScriptProps } from './public-env-script.types';
  * }
  * ```
  */
-export function RuntimeEnvScript<T extends EnvVars = EnvVars>({
-  id = 'next-public-env-script',
+export function DynamicEnvScript<T extends EnvVars = EnvVars>({
+  id = 'next-dynamic-env-script',
   env,
   onMissingVar,
   varName = '__ENV__'
-}: PublicEnvScriptProps<T>) {
+}: DynamicEnvScriptProps<T>) {
   // Warn in dev if vars are missing
   if (process.env.NODE_ENV === 'development' && onMissingVar) {
     Object.entries(env).forEach(([key, value]) => {

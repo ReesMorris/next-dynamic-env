@@ -10,7 +10,7 @@ import type { WaitForEnvOptions } from './wait-for-env.types'; /**
  * @example
  * ```ts
  * // In instrumentation-client.ts or similar
- * import { env, waitForEnv } from 'next-public-env';
+ * import { env, waitForEnv } from 'next-dynamic-env';
  *
  * (async () => {
  *   await waitForEnv();
