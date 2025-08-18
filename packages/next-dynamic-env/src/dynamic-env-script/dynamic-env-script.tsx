@@ -1,4 +1,5 @@
 import Script from 'next/script';
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '../constants';
 import type { EnvVars } from '../types';
 import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
 
@@ -30,7 +31,7 @@ export function DynamicEnvScript<T extends EnvVars = EnvVars>({
   id = 'next-dynamic-env-script',
   env,
   onMissingVar,
-  varName = '__NEXT_DYNAMIC_ENV__'
+  varName = DEFAULT_WINDOW_ENV_VAR_NAME
 }: DynamicEnvScriptProps<T>) {
   // Extract raw values if env is from createDynamicEnv, otherwise use as-is
   // We use type assertion here since __raw is hidden from the public type

@@ -1,3 +1,4 @@
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '../constants';
 import { isBrowser } from '../utils';
 import type { WaitForEnvOptions } from './wait-for-env.types'; /**
  * Waits for the global environment variables to be available on the window object.
@@ -22,7 +23,7 @@ import type { WaitForEnvOptions } from './wait-for-env.types'; /**
 export const waitForEnv = ({
   timeout = 5000,
   interval = 50,
-  varName = '__NEXT_DYNAMIC_ENV__',
+  varName = DEFAULT_WINDOW_ENV_VAR_NAME,
   onReady,
   onTimeout
 }: WaitForEnvOptions = {}): Promise<void> => {
