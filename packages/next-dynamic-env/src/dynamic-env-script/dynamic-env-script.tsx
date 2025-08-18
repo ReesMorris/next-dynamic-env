@@ -27,7 +27,7 @@ export function DynamicEnvScript<T extends EnvVars = EnvVars>({
   id = 'next-dynamic-env-script',
   env,
   onMissingVar,
-  varName = '__ENV__'
+  varName = '__NEXT_DYNAMIC_ENV__'
 }: DynamicEnvScriptProps<T>) {
   // Warn in dev if vars are missing
   if (process.env.NODE_ENV === 'development' && onMissingVar) {

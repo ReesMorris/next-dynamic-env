@@ -20,7 +20,7 @@ export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
 
   /**
    * Optional custom variable name for the global object
-   * @default '__ENV__'
+   * @default '__NEXT_DYNAMIC_ENV__'
    */
   varName?: string;
 }

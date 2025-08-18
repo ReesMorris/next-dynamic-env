@@ -22,7 +22,7 @@ import type { WaitForEnvOptions } from './wait-for-env.types'; /**
 export const waitForEnv = ({
   timeout = 5000,
   interval = 50,
-  varName = '__ENV__',
+  varName = '__NEXT_DYNAMIC_ENV__',
   onReady,
   onTimeout
 }: WaitForEnvOptions = {}): Promise<void> => {

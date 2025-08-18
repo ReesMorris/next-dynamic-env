@@ -11,7 +11,7 @@ export interface WaitForEnvOptions {
 
   /**
    * Custom variable name for the global object
-   * @default '__ENV__'
+   * @default '__NEXT_DYNAMIC_ENV__'
    */
   varName?: string;
 

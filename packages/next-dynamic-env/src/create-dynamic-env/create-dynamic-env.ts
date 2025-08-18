@@ -27,8 +27,8 @@ export const createDynamicEnv = <T extends EnvVars>(envVars: T) => {
       return envVars[key];
     }
 
-    // Client-side: prefer window.__ENV__, fallback to envVars (build-time vars)
-    const windowEnv = window.__ENV__?.[key as string];
+    // Client-side: prefer window.__NEXT_DYNAMIC_ENV__, fallback to envVars (build-time vars)
+    const windowEnv = window.__NEXT_DYNAMIC_ENV__?.[key as string];
     return (windowEnv !== undefined ? windowEnv : envVars[key]) as T[K];
   };
 };
