@@ -38,11 +38,19 @@ export function DynamicEnvScript<T extends EnvVars = EnvVars>({
     });
   }
 
-  // Filter out undefined values to reduce payload size
+  // Filter out undefined values to reduce payload size and validate content
   const cleanEnv = Object.entries(env).reduce(
     (acc, [key, value]) => {
       if (value !== undefined) {
-        acc[key] = value;
+        // Ensure value is a string and doesn't contain script tags
+        const stringValue = String(value);
+        if (stringValue.includes('</script>')) {
+          console.warn(
+            `[next-dynamic-env] Env var "${key}" contains </script> tag and was filtered out`
+          );
+          return acc;
+        }
+        acc[key] = stringValue;
       }
       return acc;
     },
