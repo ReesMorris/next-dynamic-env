@@ -1,10 +1,6 @@
 import { createDynamicEnv } from 'next-dynamic-env';
 
-// Define all environment variables you want to be available in the client
-export const RUNTIME_ENV = {
+export const dynamicEnv = createDynamicEnv({
   APP_NAME: process.env.APP_NAME,
   API_URL: process.env.API_URL
-} as const;
-
-// Create the typed env function
-export const dynamicEnv = createDynamicEnv(RUNTIME_ENV);
+});

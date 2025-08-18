@@ -8,9 +8,10 @@ export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
   id?: string;
 
   /**
-   * The environment variables object to inject into the client
+   * The environment variables object to inject into the client.
+   * Can be either a plain object or the result of createDynamicEnv()
    */
-  env: T;
+  env: T | Readonly<T>;
 
   /**
    * Optional callback for missing variables (only called in development)
