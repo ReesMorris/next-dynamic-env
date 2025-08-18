@@ -14,4 +14,14 @@ export interface WaitForEnvOptions {
    * @default '__ENV__'
    */
   varName?: string;
+
+  /**
+   * Callback function to be called when the environment variables are ready
+   */
+  onReady?: () => void;
+
+  /**
+   * Callback function to be called when the timeout is reached
+   */
+  onTimeout?: () => void;
 }

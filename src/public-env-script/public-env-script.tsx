@@ -1,5 +1,4 @@
 import Script from 'next/script';
-import React from 'react';
 import type { EnvVars } from '../types';
 import type { PublicEnvScriptProps } from './public-env-script.types';
 
@@ -16,7 +15,7 @@ import type { PublicEnvScriptProps } from './public-env-script.types';
  *   return (
  *     <html>
  *       <head>
- *         <PublicEnvScript env={PUBLIC_ENV} />
+ *         <PublicEnvScript env={RUNTIME_ENV} />
  *       </head>
  *       <body>{children}</body>
  *     </html>
@@ -24,22 +23,20 @@ import type { PublicEnvScriptProps } from './public-env-script.types';
  * }
  * ```
  */
-export function PublicEnvScript<T extends EnvVars = EnvVars>({
+export function RuntimeEnvScript<T extends EnvVars = EnvVars>({
   id = 'next-public-env-script',
   env,
   onMissingVar,
   varName = '__ENV__'
 }: PublicEnvScriptProps<T>) {
   // Warn in dev if vars are missing
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && onMissingVar) {
-      Object.entries(env).forEach(([key, value]) => {
-        if (value === undefined || value === null || value === '') {
-          onMissingVar(key);
-        }
-      });
-    }
-  }, [env, onMissingVar]);
+  if (process.env.NODE_ENV === 'development' && onMissingVar) {
+    Object.entries(env).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === '') {
+        onMissingVar(key);
+      }
+    });
+  }
 
   // Filter out undefined values to reduce payload size
   const cleanEnv = Object.entries(env).reduce(

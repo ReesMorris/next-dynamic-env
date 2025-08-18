@@ -9,12 +9,12 @@ import { isBrowser } from '../utils';
  *
  * @example
  * ```ts
- * const PUBLIC_ENV = {
+ * const RUNTIME_ENV = {
  *   API_URL: process.env.API_URL,
  *   APP_NAME: process.env.APP_NAME,
  * } as const;
  *
- * export const env = createEnv(PUBLIC_ENV);
+ * export const env = createEnv(RUNTIME_ENV);
  *
  * // Usage
  * const apiUrl = env('API_URL');
