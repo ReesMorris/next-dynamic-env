@@ -4,3 +4,6 @@ dist/
 *.log
 .env
 .env.local
+.turbo
+coverage/
+.next/

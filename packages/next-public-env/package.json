@@ -1,0 +1,58 @@
+{
+  "name": "next-public-env",
+  "version": "0.1.0",
+  "description": "Runtime environment variables for dockerized Next.js apps",
+  "author": "Rees Morris",
+  "license": "MIT",
+  "keywords": [
+    "docker",
+    "env",
+    "environment",
+    "next",
+    "nextjs",
+    "runtime",
+    "variables"
+  ],
+  "repository": "https://github.com/reesmorris/next-public-env",
+  "homepage": "https://github.com/reesmorris/next-public-env#readme",
+  "bugs": "https://github.com/reesmorris/next-public-env/issues",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "check": "bun run lint && bun run typecheck",
+    "dev": "tsup --watch",
+    "format": "biome format --write .",
+    "lint": "biome check --fix .",
+    "prepublishOnly": "pnpm build",
+    "syncpack:fix": "syncpack fix",
+    "syncpack:format": "syncpack format",
+    "syncpack:lint": "syncpack lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": "15.4.6",
+    "react": "19.1.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "next": "15.4.6",
+    "react": "19.1.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5"
+  }
+}
