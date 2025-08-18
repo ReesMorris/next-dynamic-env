@@ -1,9 +1,9 @@
-import { env } from '@/dynamic-env';
+import { dynamicEnv } from '@/dynamic-env';
 import { waitForEnv } from 'next-dynamic-env';
 
 (async () => {
   // This will be undefined
-  console.log('This is undefined:', env('APP_NAME'));
+  console.log('This is undefined:', dynamicEnv.APP_NAME);
 
   // Wait for the environment to be ready
   await waitForEnv({
@@ -13,5 +13,5 @@ import { waitForEnv } from 'next-dynamic-env';
   });
 
   // Now it should be defined
-  console.log('This is defined:', env('APP_NAME'));
+  console.log('This is defined:', dynamicEnv.APP_NAME);
 })();

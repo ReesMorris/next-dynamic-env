@@ -1,6 +1,6 @@
 'use client';
 
-import { env } from '@/dynamic-env';
+import { dynamicEnv } from '@/dynamic-env';
 
 export const Client = () => {
   return (
@@ -8,15 +8,16 @@ export const Client = () => {
       <span className='client-indicator client'>Client Component</span>
 
       <div className='env-var'>
-        <strong>API_URL:</strong> {env('API_URL')}
+        <strong>API_URL:</strong> {dynamicEnv.API_URL}
       </div>
 
       <div className='env-var'>
-        <strong>APP_NAME:</strong> {env('APP_NAME')}
+        <strong>APP_NAME:</strong> {dynamicEnv.APP_NAME}
       </div>
 
       <div className='env-var'>
-        <strong>NOT_EXPOSED:</strong> {env('NOT_EXPOSED' as never)}
+        {/** biome-ignore lint/suspicious/noExplicitAny: This is an example */}
+        <strong>NOT_EXPOSED:</strong> {(dynamicEnv as any).NOT_EXPOSED}
       </div>
     </div>
   );

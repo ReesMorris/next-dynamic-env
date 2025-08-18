@@ -7,4 +7,4 @@ export const RUNTIME_ENV = {
 } as const;
 
 // Create the typed env function
-export const env = createDynamicEnv(RUNTIME_ENV);
+export const dynamicEnv = createDynamicEnv(RUNTIME_ENV);
