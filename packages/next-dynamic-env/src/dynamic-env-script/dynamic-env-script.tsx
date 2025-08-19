@@ -62,13 +62,8 @@ export function DynamicEnvScript<T extends EnvVars = EnvVars>({
   );
 
   return (
-    <Script
-      id={id}
-      strategy='beforeInteractive'
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: This is safe because we control the content
-      dangerouslySetInnerHTML={{
-        __html: `window.${varName} = ${JSON.stringify(cleanEnv)};`
-      }}
-    />
+    <Script id={id} strategy='beforeInteractive'>
+      {`window.${varName} = ${JSON.stringify(cleanEnv)};`}
+    </Script>
   );
 }

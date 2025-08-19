@@ -1,5 +1,5 @@
+import path from 'node:path';
 import { aliasPath } from 'esbuild-plugin-alias-path';
-import path from 'path';
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
