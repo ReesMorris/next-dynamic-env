@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:packages": "turbo build --filter=next-dynamic-env",
     "check": "turbo check",
     "dev": "turbo dev",
     "format": "turbo format",

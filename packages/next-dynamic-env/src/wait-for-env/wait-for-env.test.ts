@@ -1,16 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForEnv } from './wait-for-env';
+import { WaitForEnvError } from './wait-for-env-error';
 
 describe('waitForEnv', () => {
   beforeEach(() => {
-    // Clean up window object
-    Object.keys(window).forEach(key => {
-      if (key.startsWith('__') && key.includes('ENV')) {
-        delete (window as any)[key];
-      }
-    });
-
-    // Clear all timers
     vi.clearAllTimers();
     vi.useFakeTimers();
   });
@@ -19,208 +12,398 @@ describe('waitForEnv', () => {
     vi.useRealTimers();
   });
 
-  describe('server-side behavior', () => {
-    beforeEach(() => {
-      // Mock server environment
-      vi.stubGlobal('window', undefined);
+  describe('parameter validation', () => {
+    it('should throw error for invalid timeout', () => {
+      expect(() => waitForEnv({ timeout: 0 })).toThrow(WaitForEnvError);
+      expect(() => waitForEnv({ timeout: -100 })).toThrow(
+        'Timeout must be greater than 0'
+      );
     });
 
-    afterEach(() => {
-      vi.unstubAllGlobals();
+    it('should throw error for invalid interval', () => {
+      expect(() => waitForEnv({ interval: 0 })).toThrow(
+        'Interval must be greater than 0'
+      );
+      expect(() => waitForEnv({ interval: 6000, timeout: 5000 })).toThrow(
+        'Interval must be greater than 0 and less than timeout'
+      );
     });
 
-    it('should resolve immediately on server', async () => {
-      const promise = waitForEnv();
-
-      // Should resolve without any delay
-      await expect(promise).resolves.toBeUndefined();
-    });
-
-    it('should not call callbacks on server', async () => {
-      const onReady = vi.fn();
-      const onTimeout = vi.fn();
-
-      await waitForEnv({ onReady, onTimeout });
-
-      expect(onReady).not.toHaveBeenCalled();
-      expect(onTimeout).not.toHaveBeenCalled();
+    it('should throw error for invalid varName', () => {
+      expect(() => waitForEnv({ varName: '' })).toThrow(
+        'Variable name must be a non-empty string'
+      );
+      expect(() => waitForEnv({ varName: null as any })).toThrow(
+        'Variable name must be a non-empty string'
+      );
     });
   });
 
-  describe('client-side behavior', () => {
-    it('should resolve immediately when env is already available', async () => {
-      // Set env before calling waitForEnv
-      (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
-
-      const onReady = vi.fn();
-      const promise = waitForEnv({ onReady });
-
-      await expect(promise).resolves.toBeUndefined();
-      expect(onReady).toHaveBeenCalledTimes(1);
-    });
-
-    it('should wait for env to become available', async () => {
-      const onReady = vi.fn();
-      const promise = waitForEnv({ interval: 50, onReady });
-
-      // Env not available initially
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toBeUndefined();
-
-      // Set env after 100ms
-      setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
-      }, 100);
-
-      // Advance timers
-      await vi.advanceTimersByTimeAsync(150);
-
-      await expect(promise).resolves.toBeUndefined();
-      expect(onReady).toHaveBeenCalledTimes(1);
-    });
-
-    it('should use custom variable name', async () => {
-      const onReady = vi.fn();
-      const promise = waitForEnv({
-        varName: 'CUSTOM_ENV',
-        interval: 50,
-        onReady
-      });
-
-      // Set custom env after 100ms
-      setTimeout(() => {
-        (window as any).CUSTOM_ENV = { API_URL: 'test' };
-      }, 100);
-
-      // Advance timers
-      await vi.advanceTimersByTimeAsync(150);
-
-      await expect(promise).resolves.toBeUndefined();
-      expect(onReady).toHaveBeenCalledTimes(1);
-    });
-
-    it('should timeout after specified duration', async () => {
-      const onTimeout = vi.fn();
-
-      // Start the waitForEnv and immediately set up expectation
-      const promise = waitForEnv({
-        timeout: 200,
-        interval: 50,
-        onTimeout
-      });
-
-      // Set up the rejection expectation before advancing timers
-      const expectPromise = expect(promise).rejects.toThrow(
-        'Environment variables (window.__NEXT_DYNAMIC_ENV__) not available after 200ms'
-      );
-
-      // Never set the env variable
-      // Advance timers past timeout
-      await vi.advanceTimersByTimeAsync(250);
-
-      // Wait for the expectation to resolve
-      await expectPromise;
-      expect(onTimeout).toHaveBeenCalledTimes(1);
-    });
-
-    it('should use custom timeout message with custom varName', async () => {
-      // Start the waitForEnv and immediately set up expectation
-      const promise = waitForEnv({
-        timeout: 100,
-        varName: 'MY_ENV'
-      });
-
-      // Set up the rejection expectation before advancing timers
-      const expectPromise = expect(promise).rejects.toThrow(
-        'Environment variables (window.MY_ENV) not available after 100ms'
-      );
-
-      // Advance timers past timeout
-      await vi.advanceTimersByTimeAsync(150);
-
-      // Wait for the expectation to resolve
-      await expectPromise;
-    });
-
-    it('should check at specified intervals', async () => {
-      let checkCount = 0;
-      const originalGet = Object.getOwnPropertyDescriptor(
-        window,
-        '__NEXT_DYNAMIC_ENV__'
-      );
-
-      // Mock property access to count checks
-      Object.defineProperty(window, '__NEXT_DYNAMIC_ENV__', {
-        get: () => {
-          checkCount++;
-          // Return undefined for first 3 checks, then return value
-          return checkCount > 3 ? { API_URL: 'test' } : undefined;
-        },
-        configurable: true
-      });
-
-      const promise = waitForEnv({ interval: 30 });
-
-      // Advance timers to trigger multiple checks
-      await vi.advanceTimersByTimeAsync(150);
-
-      await expect(promise).resolves.toBeUndefined();
-      expect(checkCount).toBeGreaterThanOrEqual(4);
-
-      // Restore original descriptor
-      if (originalGet) {
-        Object.defineProperty(window, '__NEXT_DYNAMIC_ENV__', originalGet);
-      } else {
-        delete (window as any).__NEXT_DYNAMIC_ENV__;
-      }
-    });
-
-    it('should use default values', async () => {
-      const promise = waitForEnv();
-
-      // Set env after default interval
-      setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
-      }, 100);
-
-      // Advance timers
-      await vi.advanceTimersByTimeAsync(150);
-
-      await expect(promise).resolves.toBeUndefined();
-    });
-
-    it('should clear timeout when env becomes available', async () => {
+  describe('memory leak prevention', () => {
+    it('should clear interval on timeout', async () => {
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
       const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
-      // Set env immediately
-      (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+      const promise = waitForEnv({ timeout: 100, interval: 20 });
 
-      await waitForEnv();
+      // Immediately set up the rejection expectation
+      const expectation = expect(promise).rejects.toThrow(WaitForEnvError);
 
+      // Advance past timeout
+      await vi.advanceTimersByTimeAsync(150);
+
+      await expectation;
+
+      expect(clearIntervalSpy).toHaveBeenCalled();
       expect(clearTimeoutSpy).toHaveBeenCalled();
     });
 
-    it('should handle multiple concurrent waitForEnv calls', async () => {
-      const onReady1 = vi.fn();
-      const onReady2 = vi.fn();
+    it('should clear timers on success', async () => {
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
-      const promise1 = waitForEnv({ onReady: onReady1 });
-      const promise2 = waitForEnv({ onReady: onReady2 });
+      const promise = waitForEnv({ timeout: 200, interval: 20 });
 
-      // Set env after 100ms
+      // Immediately set up the resolution expectation
+      const expectation = expect(promise).resolves.toEqual({ API_URL: 'test' });
+
+      // Set env after 50ms
       setTimeout(() => {
         (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
-      }, 100);
+      }, 50);
 
-      // Advance timers
+      await vi.advanceTimersByTimeAsync(100);
+
+      await expectation;
+
+      expect(clearIntervalSpy).toHaveBeenCalled();
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('retry mechanism', () => {
+    it('should retry with exponential backoff', async () => {
+      const onRetry = vi.fn();
+      const onTimeout = vi.fn();
+
+      const promise = waitForEnv({
+        timeout: 100,
+        interval: 20,
+        retries: 2,
+        backoffMultiplier: 2,
+        onRetry,
+        onTimeout
+      });
+
+      // Immediately set up the rejection expectation
+      const expectation = expect(promise).rejects.toThrow(WaitForEnvError);
+
+      // First attempt fails at 100ms
+      await vi.advanceTimersByTimeAsync(100);
+      expect(onRetry).toHaveBeenCalledWith(1, 200); // Next timeout: 100 * 2
+
+      // Second attempt fails at 200ms
+      await vi.advanceTimersByTimeAsync(200);
+      expect(onRetry).toHaveBeenCalledWith(2, 400); // Next timeout: 200 * 2
+
+      // Third attempt fails at 400ms
+      await vi.advanceTimersByTimeAsync(400);
+
+      await expectation;
+      expect(onTimeout).toHaveBeenCalledTimes(1);
+      expect(onRetry).toHaveBeenCalledTimes(2);
+    });
+
+    it('should succeed on retry', async () => {
+      const onRetry = vi.fn();
+      const onReady = vi.fn();
+
+      const promise = waitForEnv({
+        timeout: 100,
+        interval: 20,
+        retries: 2,
+        onRetry,
+        onReady
+      });
+
+      // First attempt fails
+      await vi.advanceTimersByTimeAsync(100);
+      expect(onRetry).toHaveBeenCalledTimes(1);
+
+      // Set env during second attempt
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      const result = await promise;
+      expect(result).toEqual({ API_URL: 'test' });
+      expect(onReady).toHaveBeenCalledWith({ API_URL: 'test' });
+    });
+  });
+
+  describe('partial load detection', () => {
+    it('should detect missing required keys', async () => {
+      const onPartialLoad = vi.fn();
+
+      const promise = waitForEnv({
+        timeout: 200,
+        interval: 30,
+        requiredKeys: ['API_URL', 'APP_NAME', 'SECRET_KEY'],
+        onPartialLoad
+      });
+
+      // Set partial env
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'test',
+          APP_NAME: 'MyApp'
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Should have detected partial load
+      expect(onPartialLoad).toHaveBeenCalledWith(
+        ['API_URL', 'APP_NAME'],
+        ['SECRET_KEY']
+      );
+
+      // Add missing key
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'test',
+          APP_NAME: 'MyApp',
+          SECRET_KEY: 'secret'
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      const result = await promise;
+      expect(result).toEqual({
+        API_URL: 'test',
+        APP_NAME: 'MyApp',
+        SECRET_KEY: 'secret'
+      });
+    });
+
+    it('should timeout if required keys never appear', async () => {
+      const onPartialLoad = vi.fn();
+
+      const promise = waitForEnv({
+        timeout: 100,
+        interval: 20,
+        requiredKeys: ['API_URL', 'MISSING_KEY'],
+        onPartialLoad
+      });
+
+      // Immediately set up the rejection expectation
+      const expectation = expect(promise).rejects.toThrow(WaitForEnvError);
+
+      // Set partial env
+      (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+
       await vi.advanceTimersByTimeAsync(150);
 
-      await expect(Promise.all([promise1, promise2])).resolves.toEqual([
-        undefined,
-        undefined
-      ]);
+      await expectation;
+      expect(onPartialLoad).toHaveBeenCalled();
+    });
+  });
 
-      expect(onReady1).toHaveBeenCalledTimes(1);
-      expect(onReady2).toHaveBeenCalledTimes(1);
+  describe('custom validation', () => {
+    it('should use custom validation function', async () => {
+      const validate = vi.fn((env: any) => {
+        return env.API_URL?.startsWith('https://');
+      });
+
+      const promise = waitForEnv({
+        timeout: 300,
+        interval: 30,
+        validate
+      });
+
+      // Set env with invalid URL
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'http://insecure.com'
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Validation should have been called and failed
+      expect(validate).toHaveBeenCalledWith({ API_URL: 'http://insecure.com' });
+
+      // Update to valid URL
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'https://secure.com'
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      const result = await promise;
+      expect(result).toEqual({ API_URL: 'https://secure.com' });
+    });
+
+    it('should combine validation with required keys', async () => {
+      const validate = vi.fn((env: any) => env.PORT > 1000);
+
+      const promise = waitForEnv({
+        timeout: 200,
+        interval: 30,
+        requiredKeys: ['API_URL', 'PORT'],
+        validate
+      });
+
+      // Set env with all keys but invalid validation
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'test',
+          PORT: 500
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Should not resolve yet
+      expect(validate).toHaveBeenCalledWith({ API_URL: 'test', PORT: 500 });
+
+      // Fix validation
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'test',
+          PORT: 3000
+        };
+      }, 50);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      const result = await promise;
+      expect(result).toEqual({ API_URL: 'test', PORT: 3000 });
+    });
+  });
+
+  describe('debug mode', () => {
+    it('should log debug messages when enabled', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const promise = waitForEnv({
+        timeout: 50,
+        interval: 20,
+        debug: true
+      });
+
+      // Immediately set up the rejection expectation
+      const expectation = expect(promise).rejects.toThrow();
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      await expectation;
+
+      // Should have logged debug messages
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[waitForEnv]')
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        '[waitForEnv] Debug info:\n',
+        expect.stringContaining('Error Code: TIMEOUT')
+      );
+
+      consoleSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('should not log when debug is disabled', async () => {
+      const consoleSpy = vi.spyOn(console, 'log');
+
+      const promise = waitForEnv({
+        timeout: 50,
+        interval: 20,
+        debug: false
+      });
+
+      // Immediately set up the rejection expectation
+      const expectation = expect(promise).rejects.toThrow();
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      await expectation;
+
+      // Should not have logged
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('[waitForEnv]')
+      );
+    });
+  });
+
+  describe('error details', () => {
+    it('should include detailed error information', async () => {
+      const result = waitForEnv({
+        timeout: 100,
+        requiredKeys: ['API_URL', 'APP_NAME'],
+        retries: 1
+      });
+
+      // Set up the promise to be handled properly (result is always a Promise in browser)
+      const errorPromise = (result as Promise<any>).catch(
+        (error: any) => error
+      );
+
+      await vi.advanceTimersByTimeAsync(300);
+
+      const error = await errorPromise;
+      expect(error).toBeInstanceOf(WaitForEnvError);
+      const err = error as WaitForEnvError;
+
+      expect(err.code).toBe('TIMEOUT');
+      expect(err.varName).toBe('__NEXT_DYNAMIC_ENV__');
+      expect(err.attempts).toBe(2);
+      expect(err.missingKeys).toEqual(['API_URL', 'APP_NAME']);
+
+      const debugInfo = err.getDebugInfo();
+      expect(debugInfo).toContain('Error Code: TIMEOUT');
+      expect(debugInfo).toContain('Variable Name: __NEXT_DYNAMIC_ENV__');
+      expect(debugInfo).toContain('Attempts: 2');
+      expect(debugInfo).toContain('Missing Keys: API_URL, APP_NAME');
+    });
+  });
+
+  describe('type safety', () => {
+    it('should return typed environment', async () => {
+      interface MyEnv {
+        API_URL: string;
+        PORT: number;
+      }
+
+      const promise = waitForEnv<MyEnv>({
+        timeout: 100,
+        interval: 20
+      });
+
+      setTimeout(() => {
+        (window as any).__NEXT_DYNAMIC_ENV__ = {
+          API_URL: 'https://api.example.com',
+          PORT: 3000
+        };
+      }, 30);
+
+      await vi.advanceTimersByTimeAsync(50);
+
+      const result = await promise;
+
+      // TypeScript should recognize these types
+      const apiUrl: string = result.API_URL;
+      const port: number = result.PORT;
+
+      expect(apiUrl).toBe('https://api.example.com');
+      expect(port).toBe(3000);
     });
   });
 });
