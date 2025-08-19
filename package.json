@@ -10,6 +10,10 @@
     "syncpack:fix": "syncpack fix",
     "syncpack:format": "syncpack format",
     "syncpack:lint": "syncpack lint",
+    "test": "turbo test",
+    "test:coverage": "turbo test:coverage",
+    "test:ui": "turbo test:ui",
+    "test:watch": "turbo test:watch",
     "typecheck": "turbo typecheck"
   },
   "lint-staged": {

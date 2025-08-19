@@ -19,6 +19,23 @@
     "lint": {
       "outputs": []
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**", "*.lcov"]
+    },
+    "test:ui": {
+      "persistent": true,
+      "cache": false
+    },
+    "test:watch": {
+      "persistent": true,
+      "cache": false
+    },
     "typecheck": {
       "outputs": []
     }

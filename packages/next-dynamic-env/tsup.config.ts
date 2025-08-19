@@ -7,5 +7,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ['react', 'next']
+  external: ['react', 'next'],
+  ignoreWatch: ['**/*.test.ts', '**/*.test.tsx', '**/vitest.setup.ts']
 });
