@@ -1,10 +1,7 @@
 import Script from 'next/script';
 import { DEFAULT_WINDOW_ENV_VAR_NAME } from '../constants';
-import type { EnvVars } from '../types';
+import type { DynamicEnv, EnvVars } from '../types';
 import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
-
-// Internal type for the proxy with __raw property
-type WithRaw<T> = T & { __raw: T };
 
 /**
  * Injects environment variables into the client-side window object
@@ -34,8 +31,7 @@ export function DynamicEnvScript<T extends EnvVars = EnvVars>({
   varName = DEFAULT_WINDOW_ENV_VAR_NAME
 }: DynamicEnvScriptProps<T>) {
   // Extract raw values if env is from createDynamicEnv, otherwise use as-is
-  // We use type assertion here since __raw is hidden from the public type
-  const rawEnv = '__raw' in env ? (env as WithRaw<T>).__raw : env;
+  const rawEnv = '__raw' in env ? (env as DynamicEnv<T>).__raw : env;
 
   // Warn in dev if vars are missing
   if (process.env.NODE_ENV === 'development' && onMissingVar) {

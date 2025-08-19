@@ -1,13 +1,7 @@
-import { DEFAULT_WINDOW_ENV_VAR_NAME } from '../constants';
-import type { EnvVars } from '../types';
-import { isBrowser } from '../utils';
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
+import type { DynamicEnv, EnvVars } from '@/types';
+import { isBrowser } from '@/utils';
 import type { CreateDynamicEnvOptions } from './create-dynamic-env.types';
-
-// Internal type that includes __raw
-type DynamicEnvProxy<T extends EnvVars> = Readonly<T> & { __raw: T };
-
-// Public type that hides __raw from autocomplete
-type DynamicEnvPublic<T extends EnvVars> = Readonly<T>;
 
 /**
  * Creates a type-safe environment variable accessor object with raw values for the script
@@ -34,12 +28,12 @@ type DynamicEnvPublic<T extends EnvVars> = Readonly<T>;
 export const createDynamicEnv = <T extends EnvVars>(
   envVars: T,
   { varName = DEFAULT_WINDOW_ENV_VAR_NAME }: CreateDynamicEnvOptions = {}
-): DynamicEnvPublic<T> => {
-  const proxy = new Proxy({} as T, {
-    get(_, key: string | symbol) {
-      // Special property to get raw values for DynamicEnvScript
+): DynamicEnv<T> => {
+  return new Proxy({ __raw: envVars } as DynamicEnv<T>, {
+    get(target, key: string | symbol) {
+      // Return the __raw property directly
       if (key === '__raw') {
-        return envVars;
+        return target.__raw;
       }
 
       if (typeof key !== 'string') {
@@ -56,8 +50,5 @@ export const createDynamicEnv = <T extends EnvVars>(
       const windowEnv = (window as any)[varName]?.[key];
       return windowEnv !== undefined ? windowEnv : envVars[key];
     }
-  }) as DynamicEnvProxy<T>;
-
-  // Return with the public type that doesn't expose __raw
-  return proxy as DynamicEnvPublic<T>;
+  });
 };

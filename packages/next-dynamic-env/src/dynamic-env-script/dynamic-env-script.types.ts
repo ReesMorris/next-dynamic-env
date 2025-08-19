@@ -1,4 +1,4 @@
-import type { EnvVars } from '../types';
+import type { DynamicEnv, EnvVars } from '../types';
 
 export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
   /**
@@ -11,7 +11,7 @@ export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
    * The environment variables object to inject into the client.
    * Can be either a plain object or the result of createDynamicEnv()
    */
-  env: T | Readonly<T>;
+  env: DynamicEnv<T> | EnvVars;
 
   /**
    * Optional callback for missing variables (only called in development)

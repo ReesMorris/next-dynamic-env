@@ -178,8 +178,7 @@ describe('createDynamicEnv', () => {
 
       const dynamicEnv = createDynamicEnv(envVars);
 
-      // __raw is hidden from public type but accessible internally
-      expect((dynamicEnv as any).__raw).toEqual(envVars);
+      expect(dynamicEnv.__raw).toEqual(envVars);
     });
 
     it('should return original envVars object from __raw', () => {
@@ -190,8 +189,7 @@ describe('createDynamicEnv', () => {
 
       const dynamicEnv = createDynamicEnv(envVars);
 
-      // Should be the same reference
-      expect((dynamicEnv as any).__raw).toBe(envVars);
+      expect(dynamicEnv.__raw).toBe(envVars);
     });
   });
 });
