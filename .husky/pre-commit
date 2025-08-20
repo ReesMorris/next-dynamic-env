@@ -9,6 +9,6 @@ if ! pnpm install --frozen-lockfile --dry-run >/dev/null 2>&1; then
   echo "✅ Lockfile updated and staged"
 fi
 
-bun run lint-staged
-bun run syncpack:fix
-bun run syncpack:format
+pnpm run lint-staged
+pnpm run syncpack:fix
+pnpm run syncpack:format
