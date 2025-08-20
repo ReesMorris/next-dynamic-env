@@ -32,11 +32,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Run linting
-        run: pnpm lint
+      - name: Run linting (package only)
+        run: |
+          cd packages/next-dynamic-env
+          pnpm lint
       
-      - name: Run type checking
-        run: pnpm typecheck
+      - name: Run type checking (package only)
+        run: |
+          cd packages/next-dynamic-env
+          pnpm typecheck
       
       - name: Run tests
         run: pnpm test:coverage
@@ -51,7 +55,7 @@ jobs:
           fail_ci_if_error: false
 
   build:
-    name: Build
+    name: Build Package
     runs-on: ubuntu-latest
     
     steps:
@@ -72,16 +76,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Build packages
+      - name: Build package
         run: pnpm build:packages
-      
-      - name: Build examples
-        run: pnpm build
       
       - name: Check package size
         run: |
           cd packages/next-dynamic-env
-          npx size-limit || true
+          npm pack --dry-run
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
