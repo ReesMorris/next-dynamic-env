@@ -55,7 +55,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm changeset publish
+          publish: pnpm changeset publish --provenance --access public
           title: "chore: release package"
           commit: "chore: release package"
           createGithubReleases: true
