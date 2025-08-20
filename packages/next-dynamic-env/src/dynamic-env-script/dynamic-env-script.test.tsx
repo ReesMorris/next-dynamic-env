@@ -1,6 +1,37 @@
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ClientEnv, ProcessedEnv } from '../types';
 import { DynamicEnvScript } from './dynamic-env-script';
+
+// Helper to create mock ClientEnv objects
+function createMockClientEnv<T extends ProcessedEnv>(env: T): ClientEnv<T> {
+  return new Proxy({} as ClientEnv<T>, {
+    get(_, prop: string | symbol) {
+      if (prop === '__raw') {
+        return env;
+      }
+      if (prop === '__isClient') {
+        return true;
+      }
+      const key = String(prop);
+      return env[key as keyof T];
+    },
+    has(_, prop: string | symbol) {
+      const key = String(prop);
+      return key === '__raw' || key === '__isClient' || key in env;
+    },
+    ownKeys() {
+      return [...Object.keys(env), '__raw', '__isClient'];
+    },
+    getOwnPropertyDescriptor(_, prop: string | symbol) {
+      const key = String(prop);
+      if (key === '__raw' || key === '__isClient' || key in env) {
+        return { configurable: true, enumerable: true };
+      }
+      return undefined;
+    }
+  });
+}
 
 // Mock Next.js Script component
 vi.mock('next/script', () => ({
@@ -27,7 +58,7 @@ describe('DynamicEnvScript', () => {
 
   describe('rendering', () => {
     it('should render script with default id', () => {
-      const env = { API_URL: 'https://api.example.com' };
+      const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
       const { container } = render(<DynamicEnvScript env={env} />);
 
       const script = container.querySelector('[data-testid="next-script"]');
@@ -36,7 +67,7 @@ describe('DynamicEnvScript', () => {
     });
 
     it('should render script with custom id', () => {
-      const env = { API_URL: 'https://api.example.com' };
+      const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
       const { container } = render(
         <DynamicEnvScript env={env} id='custom-id' />
       );
@@ -47,7 +78,7 @@ describe('DynamicEnvScript', () => {
     });
 
     it('should use beforeInteractive strategy', () => {
-      const env = { API_URL: 'https://api.example.com' };
+      const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
       const { container } = render(<DynamicEnvScript env={env} />);
 
       const script = container.querySelector('[data-testid="next-script"]');
@@ -58,10 +89,10 @@ describe('DynamicEnvScript', () => {
 
   describe('environment injection', () => {
     it('should inject environment variables into window object', () => {
-      const env = {
+      const env = createMockClientEnv({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
-      };
+      });
 
       render(<DynamicEnvScript env={env} />);
 
@@ -72,11 +103,11 @@ describe('DynamicEnvScript', () => {
     });
 
     it('should filter out undefined values', () => {
-      const env = {
+      const env = createMockClientEnv({
         API_URL: 'https://api.example.com',
         UNDEFINED_VAR: undefined,
         APP_NAME: 'Test App'
-      };
+      });
 
       render(<DynamicEnvScript env={env} />);
 
@@ -89,21 +120,23 @@ describe('DynamicEnvScript', () => {
       ).toBeUndefined();
     });
 
-    it('should convert non-string values to strings', () => {
-      const env = {
+    it('should preserve processed values (arrays, numbers, booleans)', () => {
+      const env = createMockClientEnv({
         STRING_VAR: 'text',
         NUMBER_VAR: 123 as any,
         BOOLEAN_VAR: true as any,
+        ARRAY_VAR: ['item1', 'item2'] as any,
         NULL_VAR: null as any
-      };
+      });
 
       render(<DynamicEnvScript env={env} />);
 
       expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
         STRING_VAR: 'text',
-        NUMBER_VAR: '123',
-        BOOLEAN_VAR: 'true',
-        NULL_VAR: 'null'
+        NUMBER_VAR: 123,
+        BOOLEAN_VAR: true,
+        ARRAY_VAR: ['item1', 'item2'],
+        NULL_VAR: null
       });
     });
   });
@@ -114,11 +147,11 @@ describe('DynamicEnvScript', () => {
         .spyOn(console, 'warn')
         .mockImplementation(() => {});
 
-      const env = {
+      const env = createMockClientEnv({
         SAFE_VAR: 'safe value',
         UNSAFE_VAR: 'malicious </script><script>alert("XSS")</script>',
         ANOTHER_SAFE: 'another safe value'
-      };
+      });
 
       render(<DynamicEnvScript env={env} />);
 
@@ -137,10 +170,10 @@ describe('DynamicEnvScript', () => {
   describe('with createDynamicEnv', () => {
     // Test with plain object to verify the functionality works
     it('should work with plain environment object', () => {
-      const env = {
+      const env = createMockClientEnv({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
-      };
+      });
 
       render(<DynamicEnvScript env={env} />);
 
@@ -160,13 +193,13 @@ describe('DynamicEnvScript', () => {
     it('should call onMissingVar for undefined values in development', () => {
       const onMissingVar = vi.fn();
 
-      const env = {
+      const env = createMockClientEnv({
         API_URL: 'https://api.example.com',
         UNDEFINED_VAR: undefined,
         NULL_VAR: null as any,
         EMPTY_VAR: '',
         VALID_VAR: 'valid'
-      };
+      });
 
       render(<DynamicEnvScript env={env} onMissingVar={onMissingVar} />);
 
@@ -182,10 +215,10 @@ describe('DynamicEnvScript', () => {
       process.env.NODE_ENV = 'production';
       const onMissingVar = vi.fn();
 
-      const env = {
+      const env = createMockClientEnv({
         API_URL: 'https://api.example.com',
         UNDEFINED_VAR: undefined
-      };
+      });
 
       render(<DynamicEnvScript env={env} onMissingVar={onMissingVar} />);
 
