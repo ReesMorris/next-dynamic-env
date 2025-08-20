@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 0.2.1
+
+### Patch Changes
+
+- [#4](https://github.com/ReesMorris/next-dynamic-env/pull/4) [`2f3f46f`](https://github.com/ReesMorris/next-dynamic-env/commit/2f3f46ff59d989c42e7a67ecb7cb0ef311133877) Thanks [@dependabot](https://github.com/apps/dependabot)! - Updated Next.js devDependency from 15.4.7 to 15.5.0 for testing compatibility. All tests pass with the new version.
+
 ## 0.2.0
 
 ### Minor Changes
