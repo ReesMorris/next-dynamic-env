@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 0.2.3
+
+### Patch Changes
+
+- [`bb02db7`](https://github.com/ReesMorris/next-dynamic-env/commit/bb02db7880cdda198df3a110d8b44268083d3909) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Include README.md in npm package for better documentation visibility on npmjs.com
+
 ## 0.2.2
 
 ### Patch Changes
