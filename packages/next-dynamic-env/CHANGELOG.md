@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 0.2.4
+
+### Patch Changes
+
+- [`6228e74`](https://github.com/ReesMorris/next-dynamic-env/commit/6228e74e1bce0319f1fd24b0cbd393dc55906e13) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Fix README not appearing on npm by replacing symlink with actual file
+
 ## 0.2.3
 
 ### Patch Changes
