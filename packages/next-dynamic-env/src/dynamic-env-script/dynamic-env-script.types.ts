@@ -14,7 +14,7 @@ export interface DynamicEnvScriptProps<T extends ProcessedEnv = ProcessedEnv> {
    * @example
    * ```tsx
    * const { clientEnv } = createDynamicEnv({ ... });
-   * <DynamicEnvScript env={clientEnv} />
+   * <DynamicEnvScript clientEnv={clientEnv} />
    * ```
    */
   clientEnv: ClientEnv<T>;

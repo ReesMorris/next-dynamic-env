@@ -34,7 +34,7 @@ import {
  * });
  *
  * // In layout.tsx
- * <DynamicEnvScript env={clientEnv} />
+ * <DynamicEnvScript clientEnv={clientEnv} />
  *
  * // In server components
  * const db = connect(serverEnv.DATABASE_URL);

@@ -17,7 +17,7 @@ import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
  *     <html lang='en'>
  *       <body>
  *         {children}
- *         <DynamicEnvScript env={clientEnv} />
+ *         <DynamicEnvScript clientEnv={clientEnv} />
  *       </body>
  *     </html>
  *   );

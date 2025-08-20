@@ -6,7 +6,7 @@ import '@/globals.css';
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <DynamicEnvScript env={clientEnv} />
+      <DynamicEnvScript clientEnv={clientEnv} />
       <Component {...pageProps} />
     </>
   );
