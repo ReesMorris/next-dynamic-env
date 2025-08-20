@@ -53,19 +53,6 @@ describe('handleValidationErrors', () => {
     });
   });
 
-  describe('when onValidationError is "ignore"', () => {
-    it('should not throw or warn', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const errors = [{ key: 'API_KEY', error: new Error('Invalid key') }];
-
-      expect(() =>
-        handleValidationErrors(errors, 'ignore' as any, false)
-      ).not.toThrow();
-
-      expect(warnSpy).not.toHaveBeenCalled();
-    });
-  });
-
   describe('when onValidationError is a custom function', () => {
     it('should call the custom function with formatted error', () => {
       const customHandler = vi.fn();

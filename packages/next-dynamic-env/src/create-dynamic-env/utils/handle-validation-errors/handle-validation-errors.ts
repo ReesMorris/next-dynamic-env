@@ -4,7 +4,7 @@ import type { OnValidationError, ValidationError } from '@/types';
  * Handles validation errors based on the configured error handling strategy.
  *
  * @param errors - Array of validation errors with their keys
- * @param onValidationError - Error handling strategy (`'throw'`, `'warn'`, `'ignore'`, or custom function)
+ * @param onValidationError - Error handling strategy (`'throw'`, `'warn'`, or custom function)
  * @param skipValidation - Whether validation is being skipped
  *
  * @throws If `onValidationError` is '`throw'` and there are errors
@@ -33,6 +33,7 @@ export const handleValidationErrors = (
 
   if (onValidationError === 'warn') {
     console.warn(fullMessage);
+    return;
   }
 
   if (typeof onValidationError === 'function') {
