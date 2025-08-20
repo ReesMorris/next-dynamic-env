@@ -15,6 +15,10 @@ jobs:
       pull-requests: write
       packages: write
       id-token: write
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+      TURBO_API: ${{ secrets.TURBO_API }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5

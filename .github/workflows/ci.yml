@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       !contains(github.event.head_commit.message, 'chore: release package')
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+      TURBO_API: ${{ secrets.TURBO_API }}
     
     steps:
       - name: Checkout repository
