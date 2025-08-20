@@ -3,11 +3,13 @@
   "scripts": {
     "build": "turbo build",
     "build:packages": "turbo build --filter=next-dynamic-env",
+    "changeset": "changeset",
     "check": "turbo check",
     "dev": "turbo dev",
     "format": "turbo format",
     "lint": "turbo lint",
     "prepare": "husky",
+    "release": "pnpm build:packages && changeset publish",
     "syncpack:fix": "syncpack fix",
     "syncpack:format": "syncpack format",
     "syncpack:lint": "syncpack lint",
@@ -15,7 +17,8 @@
     "test:coverage": "turbo test:coverage",
     "test:ui": "turbo test:ui",
     "test:watch": "turbo test:watch",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "version": "changeset version"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md}": [
@@ -24,6 +27,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.0",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.6",
     "@types/node": "^24",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
