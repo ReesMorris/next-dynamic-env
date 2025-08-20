@@ -2,6 +2,10 @@
 
 Runtime environment variables for Next.js applications with safe server/client separation. Change your configuration without rebuilding your app!
 
+**Security by Default**
+
+This library enforces a strict separation between server and client environment variables. Variables marked as `server` will throw an error if accessed on the client in development, and return `undefined` in production. Only variables explicitly marked as `client` are exposed to the browser.
+
 ## Features
 
 - 🚀 **Runtime Configuration** - Change environment variables without rebuilding
@@ -11,11 +15,6 @@ Runtime environment variables for Next.js applications with safe server/client s
 - 🎯 **Universal** - Works with App Router, Pages Router, instrumentation, and middleware
 - 🐳 **Docker Ready** - Perfect for containerized deployments
 - ⏳ **Async Loading** - Wait for env vars in files that run before the script (e.g., instrumentation files)
-
-> [!WARNING]
-> **Security by Default**
-> 
-> This library enforces a strict separation between server and client environment variables. Variables marked as `server` will throw an error if accessed on the client in development, and return `undefined` in production. Only variables explicitly marked as `client` are exposed to the browser.
 
 ## Installation
 
@@ -32,6 +31,8 @@ bun add next-dynamic-env
 ## Quick Start
 
 ### 1. Create your configuration
+
+Call `createDynamicEnv` to define your environment variables:
 
 ```typescript
 // dynamic-env.ts
@@ -62,6 +63,8 @@ export const dynamicEnv = createDynamicEnv({
 ```
 
 ### 2. Add to your layout
+
+Add the `DynamicEnvScript` to your root component.
 
 #### App Router
 
@@ -120,18 +123,22 @@ export function MyComponent() {
 
 ## Using in Client-Side Initialization
 
-For code that runs before React hydration (like instrumentation files), use `waitForEnv`:
+For code that runs only on the server (such as `instrumentation-client.ts`), use `waitForEnv`:
 
 ```typescript
 // instrumentation-client.ts
 import { waitForEnv } from 'next-dynamic-env';
+import { dynamicEnv } from '../dynamic-env';
 
-export async function register() {
-  const env = await waitForEnv();
+(async () => {
+  await waitForEnv();
 
   // Initialize monitoring, analytics, etc.
-  console.log('App initialized with:', env);
-}
+  Sentry.init({
+    dsn: dynamicEnv.SENTRY_DSN,
+    tracesSampleRate: dynamicEnv.TRACES_SAMPLE_RATE,
+  });
+})();
 ```
 
 ## API Reference
@@ -142,11 +149,13 @@ Creates a type-safe environment configuration with server/client separation.
 
 #### Config Options
 
-- `schema` (required) - Zod schema defining all environment variables
-- `client` (required) - Object with client-side environment variables
-- `server` (required) - Object with server-only environment variables
-- `onValidationError` - Error handling: `'throw'` (default), `'warn'`, or custom function
-- `skipValidation` - Skip validation (useful for build time)
+| Option | Required | Description |
+| ------ | -------- | ----------- |
+| `schema` | Yes | Zod schema defining all environment variables |
+| `client` | Yes | Object with client-side environment variables |
+| `server` | Yes | Object with server-only environment variables |
+| `onValidationError` | No | Error handling: `'throw'` (default), `'warn'`, or custom function |
+| `skipValidation` | No | Skip validation (useful for build time) |
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
@@ -175,7 +184,6 @@ const dynamicEnv = createDynamicEnv({
 - **On Client**: 
   - `client` variables are accessible
   - `server` variables throw an error in development, return `undefined` in production
-  - The `__raw` property only includes client variables
 
 ### `DynamicEnvScript`
 
@@ -183,13 +191,18 @@ React component that injects environment variables into the client.
 
 #### Props
 
-- `env` - The dynamic env object from `createDynamicEnv`
-- `onMissingVar` - Handler for missing required variables (dev only)
-- `id` - Script element ID (default: `next-dynamic-env-script`)
+| Prop | Required | Description |
+| ---- | -------- | ----------- |
+| `env` | Yes | The dynamic env object from `createDynamicEnv` |
+| `onMissingVar` | No | Handler for missing required variables (dev only) |
+| `id` | No | Script element ID (default: `next-dynamic-env-script`) |
 
 ### `waitForEnv(options?)`
 
-Waits for environment variables to be available on the client. Useful for code that runs before React hydration.
+Waits for environment variables to be available.
+
+Note this is usually not needed, since the `DynamicEnvScript` has a `beforeInteractive` strategy, but can be useful in scenarios
+where you need to use environment variables before the script runs, such as in client instrumentation files.
 
 ```typescript
 import { waitForEnv } from 'next-dynamic-env';
@@ -198,7 +211,7 @@ import { waitForEnv } from 'next-dynamic-env';
 await waitForEnv();
 
 // With options
-const env = await waitForEnv({
+await waitForEnv({
   requiredKeys: ['API_URL', 'APP_NAME'],
   timeout: 5000,
   debug: true,
@@ -210,12 +223,14 @@ const env = await waitForEnv({
 
 #### Options
 
-- `timeout` - Maximum wait time in ms (default: 5000)
-- `interval` - Polling interval in ms (default: 50)
-- `requiredKeys` - Array of required environment variable keys
-- `validate` - Custom validation function
-- `retries` - Number of retry attempts (default: 0)
-- `debug` - Enable debug logging
+| Option | Description |
+| ------ | ----------- |
+| `timeout` | Maximum wait time in ms (default: 5000) |
+| `interval` | Polling interval in ms (default: 50) |
+| `requiredKeys` | Array of required environment variable keys |
+| `validate` | Custom validation function |
+| `retries` | Number of retry attempts (default: 0) |
+| `debug` | Enable debug logging |
 
 ## Examples
 
