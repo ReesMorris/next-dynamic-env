@@ -1,4 +1,6 @@
-export interface WaitForEnvOptions<T = Record<string, unknown>> {
+import type { ProcessedEnv } from '@/types';
+
+export interface WaitForEnvOptions<T = ProcessedEnv> {
   /**
    * Timeout in milliseconds
    * @default 5000
