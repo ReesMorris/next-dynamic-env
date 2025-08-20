@@ -32,19 +32,19 @@ RUN pnpm build
 FROM node:20-alpine
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Copy standalone build
+COPY --from=builder /app/examples/with-app-router/.next/standalone ./
+COPY --from=builder /app/examples/with-app-router/.next/static ./examples/with-app-router/.next/static
 
-# Copy built app and necessary files
-COPY --from=builder /app/examples/with-app-router/.next ./.next
-COPY --from=builder /app/examples/with-app-router/public ./public
-COPY --from=builder /app/examples/with-app-router/package.json ./
-COPY --from=builder /app/examples/with-app-router/node_modules ./node_modules
-
-# Copy the built library (needed for runtime)
-COPY --from=builder /app/packages/next-dynamic-env/dist ./node_modules/next-dynamic-env/dist
-COPY --from=builder /app/packages/next-dynamic-env/package.json ./node_modules/next-dynamic-env/
+# Copy public directory if it exists
+COPY --from=builder /app/examples/with-app-router/public* ./examples/with-app-router/public/
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+# Set the correct working directory for standalone
+WORKDIR /app/examples/with-app-router
+
+# Set default PORT if not provided
+ENV PORT=3000
+
+CMD ["node", "server.js"]
