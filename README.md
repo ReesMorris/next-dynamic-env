@@ -1,5 +1,9 @@
 # Next Dynamic Env
 
+[![npm version](https://img.shields.io/npm/v/next-dynamic-env.svg)](https://www.npmjs.com/package/next-dynamic-env)
+[![npm downloads](https://img.shields.io/npm/dm/next-dynamic-env.svg)](https://www.npmjs.com/package/next-dynamic-env)
+[![license](https://img.shields.io/npm/l/next-dynamic-env.svg)](https://github.com/reesmorris/next-dynamic-env/blob/main/LICENSE)
+
 Runtime environment variables for Next.js applications with safe server/client separation. Change your configuration without rebuilding your app!
 
 **Security by Default**
