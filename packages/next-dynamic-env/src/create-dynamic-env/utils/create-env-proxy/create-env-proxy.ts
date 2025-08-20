@@ -19,7 +19,8 @@ import type { CreateEnvProxyOptions } from './create-env-proxy.types';
  * @remarks
  * - On the server: Always returns values from `envVars`
  * - On the client: Checks `window[varName]` first, falls back to `envVars`
- * - The special `__raw` property always returns the original `envVars` object
+ * - Server-only variables throw an error on the client in development
+ * - The special `__raw` property returns only client variables when on the client
  * - Non-string property keys return `undefined`
  * - Validation only occurs for values retrieved from the window object
  */
@@ -28,11 +29,23 @@ export const createEnvProxy = <T extends Record<string, unknown>>({
   rawEnvVars,
   varName,
   schema,
-  onValidationError
+  onValidationError,
+  clientKeys = [],
+  serverKeys = []
 }: CreateEnvProxyOptions<T>): DynamicEnv<T> => {
-  // Use rawEnvVars for __raw if provided (for Zod validation case), otherwise use envVars
+  const isClient = isBrowser();
+
+  // Filter raw values to only include client keys when on the client
   const rawValues = rawEnvVars || envVars;
-  return new Proxy({ __raw: rawValues } as DynamicEnv<T>, {
+  const filteredRawValues = isClient
+    ? Object.fromEntries(
+        Object.entries(rawValues).filter(([key]) =>
+          clientKeys.includes(key as keyof T)
+        )
+      )
+    : rawValues;
+
+  return new Proxy({ __raw: filteredRawValues } as DynamicEnv<T>, {
     get(target, key: string | symbol) {
       // Return the __raw property directly
       if (key === '__raw') {
@@ -43,8 +56,22 @@ export const createEnvProxy = <T extends Record<string, unknown>>({
         return undefined;
       }
 
+      // Check if this is a server-only variable being accessed on the client
+      if (isClient && serverKeys.includes(key as keyof T)) {
+        // In development, throw a descriptive error
+        if (process.env.NODE_ENV === 'development') {
+          throw new Error(
+            `❌ Attempted to access server-only environment variable "${key}" on the client.\n` +
+              `Server-only variables (${serverKeys.join(', ')}) are not available in the browser.\n` +
+              `If you need this value on the client, move it to the 'client' object in your configuration.`
+          );
+        }
+        // In production, return undefined
+        return undefined;
+      }
+
       // Server-side: always use the passed envVars
-      if (!isBrowser()) {
+      if (!isClient) {
         return envVars[key];
       }
 

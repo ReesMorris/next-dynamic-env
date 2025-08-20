@@ -1,26 +1,25 @@
 import type { z } from 'zod';
 
-export interface CreateDynamicEnvOptions {
-  /**
-   * Custom variable name for the global object
-   * @default '__NEXT_DYNAMIC_ENV__'
-   */
-  varName?: string;
-}
-
 /**
- * Configuration for createDynamicEnv with Zod schema
+ * Configuration for createDynamicEnv with server/client separation
  */
 export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
   /**
-   * Zod schema for validating environment variables
+   * Zod schema for validating all environment variables (both server and client)
    */
   schema: T;
 
   /**
-   * Runtime environment variables to validate and use
+   * Server-only environment variables
+   * These will only be available on the server and will throw/return undefined on the client
    */
-  runtimeEnv: Record<string, string | undefined>;
+  server?: Partial<Record<keyof z.infer<T>, string | undefined>>;
+
+  /**
+   * Client environment variables
+   * These will be available on both server and client (injected via DynamicEnvScript)
+   */
+  client?: Partial<Record<keyof z.infer<T>, string | undefined>>;
 
   /**
    * How to handle validation errors
@@ -37,7 +36,7 @@ export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
   varName?: string;
 
   /**
-   * Whether to skip validation (useful for testing)
+   * Whether to skip validation (useful for build time)
    * @default false
    */
   skipValidation?: boolean;

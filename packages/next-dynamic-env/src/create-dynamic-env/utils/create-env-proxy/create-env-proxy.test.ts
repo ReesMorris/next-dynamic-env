@@ -282,12 +282,13 @@ describe('createEnvProxy', () => {
       expect(proxy.__raw).toBe(envVars);
     });
 
-    it('should not be affected by window values for __raw', () => {
+    it('should filter __raw to only client keys on client', () => {
       vi.mocked(isBrowser).mockReturnValue(true);
 
       const envVars = {
         API_URL: 'https://build-time.com',
-        APP_NAME: 'Build Time App'
+        APP_NAME: 'Build Time App',
+        SERVER_SECRET: 'secret-value'
       };
 
       (window as any).__NEXT_DYNAMIC_ENV__ = {
@@ -297,15 +298,18 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL', 'APP_NAME'],
+        serverKeys: ['SERVER_SECRET']
       });
 
-      // __raw should still return the original envVars
-      expect(proxy.__raw).toBe(envVars);
+      // __raw should only include client keys on client (filtered from envVars)
       expect(proxy.__raw).toEqual({
         API_URL: 'https://build-time.com',
         APP_NAME: 'Build Time App'
       });
+      // Server keys should not be in __raw on client
+      expect(proxy.__raw.SERVER_SECRET).toBeUndefined();
     });
   });
 

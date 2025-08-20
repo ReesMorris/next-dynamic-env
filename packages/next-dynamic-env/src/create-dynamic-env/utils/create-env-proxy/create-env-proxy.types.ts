@@ -35,4 +35,14 @@ export interface CreateEnvProxyOptions<
    * - Function: Custom handler for validation errors
    */
   onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+
+  /**
+   * Keys that are available on the client
+   */
+  clientKeys?: Array<keyof T>;
+
+  /**
+   * Keys that are only available on the server
+   */
+  serverKeys?: Array<keyof T>;
 }
