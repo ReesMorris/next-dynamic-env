@@ -101,7 +101,7 @@ importers:
   packages/next-dynamic-env:
     dependencies:
       zod:
-        specifier: ^4.0.17
+        specifier: '>=3.0.0'
         version: 4.0.17
     devDependencies:
       '@biomejs/biome':
