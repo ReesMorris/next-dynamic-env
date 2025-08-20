@@ -58,27 +58,15 @@ export const createEnvProxy = <T extends Record<string, unknown>>({
 
       // Check if this is a server-only variable being accessed on the client
       if (isClient && serverKeys.includes(key as keyof T)) {
-        const errorMessage =
-          `❌ Attempted to access server-only environment variable "${key}" on the client.\n` +
-          `Server-only variables (${serverKeys.join(', ')}) are not available in the browser.\n` +
-          `If you need this value on the client, move it to the 'client' object in your configuration.`;
-
-        // In development, respect the onValidationError setting
+        // In development, throw a descriptive error
         if (process.env.NODE_ENV === 'development') {
-          const errorHandler = onValidationError ?? 'throw';
-
-          if (errorHandler === 'throw') {
-            throw new Error(errorMessage);
-          } else if (errorHandler === 'warn') {
-            console.warn(errorMessage);
-          }
-          // For custom handlers, we don't have a ZodError here, so just warn
-          else if (typeof errorHandler === 'function') {
-            console.warn(errorMessage);
-          }
+          throw new Error(
+            `❌ Attempted to access server-only environment variable "${key}" on the client.\n` +
+              `Server-only variables (${serverKeys.join(', ')}) are not available in the browser.\n` +
+              `If you need this value on the client, move it to the 'client' object in your configuration.`
+          );
         }
-
-        // Always return undefined for server vars on client
+        // In production, return undefined
         return undefined;
       }
 

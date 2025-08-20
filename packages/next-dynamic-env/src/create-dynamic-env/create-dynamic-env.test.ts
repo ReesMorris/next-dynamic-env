@@ -108,7 +108,7 @@ describe('createDynamicEnv with server/client separation', () => {
       expect(env.CLIENT_VAR).toBe('client-value');
     });
 
-    it('should throw error when accessing server variables on client in development by default', () => {
+    it('should throw error when accessing server variables on client in development', () => {
       process.env.NODE_ENV = 'development';
 
       const env = createDynamicEnv({
@@ -122,81 +122,11 @@ describe('createDynamicEnv with server/client separation', () => {
         server: {
           SERVER_VAR: 'server-value'
         }
-        // onValidationError defaults to 'throw'
       });
 
       expect(() => env.SERVER_VAR).toThrow(
         'Attempted to access server-only environment variable "SERVER_VAR" on the client'
       );
-    });
-
-    it('should warn instead of throwing when onValidationError is "warn"', () => {
-      process.env.NODE_ENV = 'development';
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const env = createDynamicEnv({
-        schema: z.object({
-          CLIENT_VAR: z.string(),
-          SERVER_VAR: z.string().optional()
-        }),
-        client: {
-          CLIENT_VAR: 'client-value'
-        },
-        server: {
-          SERVER_VAR: 'server-value'
-        },
-        onValidationError: 'warn'
-      });
-
-      // Should not throw
-      expect(() => env.SERVER_VAR).not.toThrow();
-
-      // Should return undefined
-      expect(env.SERVER_VAR).toBeUndefined();
-
-      // Should have warned
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Attempted to access server-only environment variable "SERVER_VAR" on the client'
-        )
-      );
-
-      warnSpy.mockRestore();
-    });
-
-    it('should warn with custom error handler for server variable access', () => {
-      process.env.NODE_ENV = 'development';
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const customHandler = vi.fn();
-
-      const env = createDynamicEnv({
-        schema: z.object({
-          CLIENT_VAR: z.string(),
-          SERVER_VAR: z.string().optional()
-        }),
-        client: {
-          CLIENT_VAR: 'client-value'
-        },
-        server: {
-          SERVER_VAR: 'server-value'
-        },
-        onValidationError: customHandler
-      });
-
-      // Should not throw
-      expect(() => env.SERVER_VAR).not.toThrow();
-
-      // Should return undefined
-      expect(env.SERVER_VAR).toBeUndefined();
-
-      // Should have warned (custom handlers get a console.warn for server access)
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Attempted to access server-only environment variable "SERVER_VAR" on the client'
-        )
-      );
-
-      warnSpy.mockRestore();
     });
 
     it('should return undefined for server variables on client in production', () => {
