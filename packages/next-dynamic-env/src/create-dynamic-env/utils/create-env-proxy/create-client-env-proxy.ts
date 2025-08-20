@@ -31,8 +31,11 @@ export const createClientEnvProxy = <T extends ProcessedEnv>(
 
       // On the browser, get client variables from window if available
       if (isBrowser()) {
-        // biome-ignore lint/suspicious/noExplicitAny: Window is not typed
-        const windowEnv = (window as any).__NEXT_DYNAMIC_ENV__;
+        const windowEnv = (
+          window as unknown as {
+            __NEXT_DYNAMIC_ENV__?: Record<string, unknown>;
+          }
+        ).__NEXT_DYNAMIC_ENV__;
         if (windowEnv && key in windowEnv) {
           return windowEnv[key];
         }
