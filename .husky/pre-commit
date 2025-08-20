@@ -1,3 +1,14 @@
-bun run lint-staged
-bun run syncpack:fix
-bun run syncpack:format
+#!/bin/sh
+
+# Check if pnpm-lock.yaml is up to date
+echo "Checking lockfile..."
+if ! pnpm install --frozen-lockfile --dry-run >/dev/null 2>&1; then
+  echo "❌ Lockfile is out of date. Running 'pnpm install' to update it..."
+  pnpm install
+  git add pnpm-lock.yaml
+  echo "✅ Lockfile updated and staged"
+fi
+
+pnpm run lint-staged
+pnpm run syncpack:fix
+pnpm run syncpack:format

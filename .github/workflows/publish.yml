@@ -1,8 +1,6 @@
-name: Publish to npm
+name: Publish to npm (Manual)
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
@@ -25,7 +23,7 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
