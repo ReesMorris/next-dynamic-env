@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        next-version: ['14.2.0', '15.0.0', '15.4.7', '15.5.0']
+        next-version: ['14.0.0', '14.2.0', '15.0.0', 'latest']
     
     steps:
       - name: Checkout repository
