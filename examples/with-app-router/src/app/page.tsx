@@ -16,7 +16,7 @@ const HomePage = () => {
         </p>
       </div>
 
-      {/* <Server /> */}
+      <Server />
       <Client />
 
       <div className='container'>
