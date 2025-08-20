@@ -51,11 +51,5 @@ export const processEnvEntry = (
   }
 
   // Validate with standard schema
-  try {
-    return validateWithSchema(key, value, schema);
-  } catch (error) {
-    throw new Error(
-      `Validation failed for ${key}: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
+  return validateWithSchema(key, value, schema);
 };
