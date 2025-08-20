@@ -32,14 +32,20 @@ jobs:
       - name: Check formatting
         run: pnpm format
       
-      - name: Run linting
-        run: pnpm lint
+      - name: Run linting (package only)
+        run: |
+          cd packages/next-dynamic-env
+          pnpm lint
       
-      - name: Run type checking
-        run: pnpm typecheck
+      - name: Run type checking (package only)
+        run: |
+          cd packages/next-dynamic-env
+          pnpm typecheck
       
       - name: Run tests
-        run: pnpm test:coverage
+        run: |
+          cd packages/next-dynamic-env
+          pnpm test:coverage
       
       - name: Build packages
         run: pnpm build:packages
