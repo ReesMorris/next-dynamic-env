@@ -152,14 +152,14 @@ import { dynamicEnv } from '../dynamic-env';
 Creates a type-safe environment configuration with server/client separation.
 
 #### Config Options
-
-| Option | Required | Description |
-| ------ | -------- | ----------- |
-| `schema` | Yes | Zod schema defining all environment variables |
-| `client` | Yes | Object with client-side environment variables |
-| `server` | Yes | Object with server-only environment variables |
-| `onValidationError` | No | Error handling: `'throw'` (default), `'warn'`, or custom function |
-| `skipValidation` | No | Skip validation (useful for build time) |
+| Option | Required | Default | Description |
+| ------ | -------- | ------- | ----------- |
+| `schema` | Yes | - | Zod schema defining all environment variables |
+| `client` | Yes | - | Object with client-side environment variables |
+| `server` | Yes | - | Object with server-only environment variables |
+| `onValidationError` | No | `'throw'` | Error handling: `'throw'`, `'warn'`, or custom function |
+| `skipValidation` | No | `false` | Skip validation (useful for build time) |
+| `emptyStringAsUndefined` | No | `true` | Convert empty strings to undefined |
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
@@ -194,12 +194,11 @@ const dynamicEnv = createDynamicEnv({
 React component that injects environment variables into the client.
 
 #### Props
-
-| Prop | Required | Description |
-| ---- | -------- | ----------- |
-| `env` | Yes | The dynamic env object from `createDynamicEnv` |
-| `onMissingVar` | No | Handler for missing required variables (dev only) |
-| `id` | No | Script element ID (default: `next-dynamic-env-script`) |
+| Prop | Required | Default | Description |
+| ---- | -------- | ------- | ----------- |
+| `env` | Yes | - | The dynamic env object from `createDynamicEnv` |
+| `onMissingVar` | No | - | Handler for missing required variables (dev only) |
+| `id` | No | `next-dynamic-env-script` | Script element ID |
 
 ### `waitForEnv(options?)`
 
@@ -227,14 +226,14 @@ await waitForEnv({
 
 #### Options
 
-| Option | Description |
-| ------ | ----------- |
-| `timeout` | Maximum wait time in ms (default: 5000) |
-| `interval` | Polling interval in ms (default: 50) |
-| `requiredKeys` | Array of required environment variable keys |
-| `validate` | Custom validation function |
-| `retries` | Number of retry attempts (default: 0) |
-| `debug` | Enable debug logging |
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `timeout` | 5000 | Maximum wait time in ms |
+| `interval` | 50 | Polling interval in ms |
+| `requiredKeys` | - | Array of required environment variable keys |
+| `validate` | - | Custom validation function |
+| `retries` | 0 | Number of retry attempts |
+| `debug` | - | Enable debug logging |
 
 ## Examples
 
@@ -242,6 +241,35 @@ Check out the [examples](./examples) directory:
 
 - [App Router](./examples/with-app-router) - Next.js 15 with App Router
 - [Pages Router](./examples/with-pages-router) - Next.js with Pages Router
+
+## Empty String Handling
+
+By default, `next-dynamic-env` converts empty strings to `undefined` before validation. This prevents common issues with optional fields:
+
+```typescript
+// Environment: SENTRY_URL=""
+const dynamicEnv = createDynamicEnv({
+  schema: z.object({
+    SENTRY_URL: z.string().url().optional(), // Would fail with empty string
+  }),
+  client: {
+    SENTRY_URL: process.env.SENTRY_URL, // "" becomes undefined
+  },
+  server: {},
+  // emptyStringAsUndefined: true (default)
+});
+
+// Result: dynamicEnv.SENTRY_URL === undefined ✅
+```
+
+You can disable this behavior if needed:
+
+```typescript
+const dynamicEnv = createDynamicEnv({
+  // ...
+  emptyStringAsUndefined: false, // Keep empty strings as-is
+});
+```
 
 ## Validation with Zod
 

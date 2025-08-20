@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type z from 'zod';
 
 /**
@@ -25,11 +26,11 @@ export interface CreateEnvProxyOptions<
 
   /**
    * Defines behavior when validation fails.
-   * - 'throw': Throws an error on validation failure
-   * - 'warn': Logs a warning on validation failure
+   * - `'throw'`: Throws an error on validation failure
+   * - `'warn'`: Logs a warning on validation failure
    * - Function: Custom handler for validation errors
    */
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+  onValidationError?: onValidationError;
 
   /**
    * Keys that are available on the client

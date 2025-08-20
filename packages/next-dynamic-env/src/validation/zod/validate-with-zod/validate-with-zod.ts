@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type z from 'zod';
 import { formatZodError } from '../format-zod-error';
 
@@ -11,7 +12,7 @@ import { formatZodError } from '../format-zod-error';
 export const validateWithZod = <T extends z.ZodObject<z.ZodRawShape>>(
   schema: T,
   env: Record<string, string | undefined>,
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void)
+  onValidationError?: onValidationError
 ): Record<string, unknown> => {
   const result = schema.safeParse(env);
 

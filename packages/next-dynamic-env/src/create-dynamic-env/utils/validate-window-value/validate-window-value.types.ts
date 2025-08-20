@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type z from 'zod';
 
 /**
@@ -23,9 +24,9 @@ export interface ValidateWindowValueOptions<
 
   /**
    * Determines how validation errors are handled:
-   * - 'throw': throws an error when validation fails
-   * - 'warn': logs a warning when validation fails
+   * - `'throw'`: throws an error when validation fails
+   * - `'warn'`: logs a warning when validation fails
    * - function: custom handler called with the validation errors
    */
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+  onValidationError?: onValidationError;
 }

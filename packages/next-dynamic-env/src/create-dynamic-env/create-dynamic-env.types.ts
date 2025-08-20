@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type { z } from 'zod';
 
 /**
@@ -23,15 +24,22 @@ export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
 
   /**
    * How to handle validation errors
-   * - 'throw': Throw an error (default in development)
-   * - 'warn': Log a warning and continue (default in production)
+   * - `'throw'`: Throw an error (default in development)
+   * - `'warn'`: Log a warning and continue (default in production)
    * - function: Custom error handler
    */
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+  onValidationError?: onValidationError;
 
   /**
    * Whether to skip validation (useful for build time)
    * @default false
    */
   skipValidation?: boolean;
+
+  /**
+   * Convert empty strings to undefined before validation
+   * This is useful for optional fields that receive empty strings from environment variables
+   * @default true
+   */
+  emptyStringAsUndefined?: boolean;
 }

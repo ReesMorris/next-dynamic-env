@@ -2,7 +2,12 @@ import type { DynamicEnv } from '@/types';
 import { isBrowser } from '@/utils';
 import type { z } from 'zod';
 import type { CreateDynamicEnvConfig } from './create-dynamic-env.types';
-import { createEnvProxy, validateRuntimeEnv } from './utils';
+import {
+  checkDuplicateKeys,
+  createEnvProxy,
+  processEmptyStrings,
+  validateRuntimeEnv
+} from './utils';
 
 /**
  * Creates a type-safe environment variable accessor with server/client separation
@@ -38,8 +43,9 @@ export function createDynamicEnv<T extends z.ZodObject<z.ZodRawShape>>(
     schema,
     server = {},
     client = {},
-    onValidationError = 'throw', // Default to 'throw' for consistency
-    skipValidation = false
+    onValidationError = 'throw',
+    skipValidation = false,
+    emptyStringAsUndefined = true
   } = config;
 
   // Extract client keys for the proxy to know what's available on client
@@ -47,16 +53,20 @@ export function createDynamicEnv<T extends z.ZodObject<z.ZodRawShape>>(
   const serverKeys = Object.keys(server) as Array<keyof z.infer<T>>;
 
   // Check for duplicate keys between server and client
-  const duplicateKeys = clientKeys.filter(key => serverKeys.includes(key));
-  if (duplicateKeys.length > 0) {
-    console.warn(
-      `⚠️ The following environment variables are defined in both server and client configurations: ${duplicateKeys.join(', ')}.\n` +
-        'Client values will take precedence.'
-    );
+  checkDuplicateKeys(clientKeys, serverKeys);
+
+  // Process environment variables: convert empty strings to undefined if enabled
+  let processedServer = { ...server };
+  let processedClient = { ...client };
+
+  // If `emptyStringAsUndefined` is true, convert empty strings to undefined
+  if (emptyStringAsUndefined) {
+    processedServer = processEmptyStrings(processedServer);
+    processedClient = processEmptyStrings(processedClient);
   }
 
   // Combine server and client env vars (client takes precedence)
-  const runtimeEnv = { ...server, ...client };
+  const runtimeEnv = { ...processedServer, ...processedClient };
 
   // On the client side, skip initial validation since process.env values are undefined
   // Validation will happen when accessing values from the window object

@@ -243,7 +243,8 @@ describe('createDynamicEnv with server/client separation', () => {
           REQUIRED_VAR: ''
         },
         server: {},
-        onValidationError: 'warn'
+        onValidationError: 'warn',
+        emptyStringAsUndefined: false // Disable to test validation of empty strings
       });
 
       expect(warnSpy).toHaveBeenCalled();
@@ -263,7 +264,8 @@ describe('createDynamicEnv with server/client separation', () => {
           REQUIRED_VAR: ''
         },
         server: {},
-        onValidationError: errorHandler
+        onValidationError: errorHandler,
+        emptyStringAsUndefined: false // Disable to test validation of empty strings
       });
 
       expect(errorHandler).toHaveBeenCalled();
@@ -279,7 +281,8 @@ describe('createDynamicEnv with server/client separation', () => {
           REQUIRED_VAR: ''
         },
         server: {},
-        skipValidation: true
+        skipValidation: true,
+        emptyStringAsUndefined: false // Disable to test validation of empty strings
       });
 
       expect(env.REQUIRED_VAR).toBe('');

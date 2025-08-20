@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type { z } from 'zod';
 
 /**
@@ -18,11 +19,11 @@ export interface DynamicEnvConfigWithSchema<
 
   /**
    * How to handle validation errors
-   * - 'throw': Throw an error (default in development)
-   * - 'warn': Log a warning and continue (default in production)
+   * - `'throw'`: Throw an error (default in development)
+   * - `'warn'`: Log a warning and continue (default in production)
    * - function: Custom error handler
    */
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+  onValidationError?: onValidationError;
 
   /**
    * Whether to skip validation (useful for testing)

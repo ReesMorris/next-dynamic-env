@@ -1,3 +1,4 @@
+import type { onValidationError } from '@/types';
 import type z from 'zod';
 
 /**
@@ -18,12 +19,12 @@ export interface ValidateRuntimeEnvOptions<
 
   /**
    * Determines how validation errors are handled.
-   * - 'throw': Throws an error when validation fails.
-   * - 'warn': Logs a warning when validation fails.
+   * - `'throw'`: Throws an error when validation fails.
+   * - `'warn'`: Logs a warning when validation fails.
    * - Function: A custom handler for validation errors.
    * @default 'throw'
    */
-  onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
+  onValidationError?: onValidationError;
 
   /**
    * When true, skips the validation process entirely.
