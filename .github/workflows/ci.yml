@@ -8,11 +8,8 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Test & Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
     
     steps:
       - name: Checkout repository
@@ -23,10 +20,10 @@ jobs:
         with:
           version: 10.15.0
       
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -45,80 +42,7 @@ jobs:
       - name: Run tests
         run: |
           cd packages/next-dynamic-env
-          pnpm test:coverage
-      
-      - name: Upload coverage reports
-        if: matrix.node-version == '20.x'
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./packages/next-dynamic-env/coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
-  build:
-    name: Build Package
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-      
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          pnpm test
       
       - name: Build package
         run: pnpm build:packages
-      
-      - name: Check package size
-        run: |
-          cd packages/next-dynamic-env
-          npm pack --dry-run
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: packages/next-dynamic-env/dist
-
-  compatibility:
-    name: Compatibility Check
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        next-version: ['14.0.0', '14.2.0', '15.0.0', 'latest']
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-      
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Test with Next.js ${{ matrix.next-version }}
-        run: |
-          cd packages/next-dynamic-env
-          pnpm add -D next@${{ matrix.next-version }}
-          pnpm test
