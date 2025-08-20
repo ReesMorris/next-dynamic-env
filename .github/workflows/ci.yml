@@ -43,6 +43,3 @@ jobs:
         run: |
           cd packages/next-dynamic-env
           pnpm test
-      
-      - name: Build package
-        run: pnpm build:packages
