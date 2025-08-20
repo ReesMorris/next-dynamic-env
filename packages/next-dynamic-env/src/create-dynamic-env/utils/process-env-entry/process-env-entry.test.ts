@@ -4,10 +4,10 @@ import { processEnvEntry } from './process-env-entry';
 
 // Mock the validateWithSchema function
 vi.mock('../validate-with-schema', () => ({
-  validateWithSchema: vi.fn((_key, value, _schema) => {
-    // Simple mock implementation
+  validateWithSchema: vi.fn((key, value, _schema) => {
+    // Simple mock implementation that matches real behavior
     if (value === 'mock-invalid') {
-      throw new Error('Mock validation error');
+      throw new Error(`Validation failed for ${key}: Mock validation error`);
     }
     // For testing, just return the value with '_validated' suffix
     return `${value}_validated`;
@@ -111,8 +111,8 @@ describe('processEnvEntry', () => {
       const { validateWithSchema } = vi.mocked(
         await import('../validate-with-schema')
       );
-      validateWithSchema.mockImplementationOnce(() => {
-        throw 'String error';
+      validateWithSchema.mockImplementationOnce(key => {
+        throw new Error(`Validation failed for ${key}: String error`);
       });
 
       expect(() => {

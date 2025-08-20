@@ -29,39 +29,36 @@ export function DynamicEnvScript<T extends ProcessedEnv = ProcessedEnv>({
   env,
   onMissingVar
 }: DynamicEnvScriptProps<T>) {
-  // Extract values from ClientEnv proxy (excluding special properties)
-  const clientEnv: ProcessedEnv = {};
+  // Extract and clean client environment values in a single pass
+  const cleanEnv: ProcessedEnv = {};
   for (const key of Object.keys(env)) {
     if (key !== '__raw' && key !== '__isClient') {
-      clientEnv[key] = env[key as keyof T];
-    }
-  }
+      const value = env[key as keyof T];
 
-  // Warn in dev if vars are missing
-  if (process.env.NODE_ENV === 'development' && onMissingVar && clientEnv) {
-    Object.entries(clientEnv).forEach(([key, value]) => {
-      if (value === undefined || value === null || value === '') {
+      // Warn in dev if var is missing
+      if (
+        process.env.NODE_ENV === 'development' &&
+        onMissingVar &&
+        (value === undefined || value === null || value === '')
+      ) {
         onMissingVar(key);
       }
-    });
-  }
 
-  // Serialize the processed client environment values for injection
-  const cleanEnv = Object.entries(clientEnv).reduce((acc, [key, value]) => {
-    if (value !== undefined) {
-      // For security, check if stringified value contains </script>
-      const stringified = JSON.stringify(value);
-      if (stringified.includes('</script>')) {
-        console.warn(
-          `[next-dynamic-env] Env var "${key}" contains </script> tag and was filtered out`
-        );
-        return acc;
+      // Only include defined values in the output
+      if (value !== undefined) {
+        // For security, check if stringified value contains </script>
+        const stringified = JSON.stringify(value);
+        if (stringified.includes('</script>')) {
+          console.warn(
+            `[next-dynamic-env] Env var "${key}" contains </script> tag and was filtered out`
+          );
+        } else {
+          // Keep the processed value (could be string, number, boolean, array, etc.)
+          cleanEnv[key] = value;
+        }
       }
-      // Keep the processed value (could be string, number, boolean, array, etc.)
-      acc[key] = value;
     }
-    return acc;
-  }, {} as ProcessedEnv);
+  }
 
   return (
     <Script id={id} strategy='beforeInteractive'>
