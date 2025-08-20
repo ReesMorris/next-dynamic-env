@@ -15,10 +15,10 @@ import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
  * export default function RootLayout({ children }) {
  *   return (
  *     <html lang='en'>
- *       <head>
+ *       <body>
+ *         {children}
  *         <DynamicEnvScript env={dynamicEnv} />
- *       </head>
- *       <body>{children}</body>
+ *       </body>
  *     </html>
  *   );
  * }

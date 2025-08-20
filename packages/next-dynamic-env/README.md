@@ -80,10 +80,10 @@ import { dynamicEnv } from '../dynamic-env';
 export default function RootLayout({ children }) {
   return (
     <html>
-      <head>
+      <body>
+        {children}
         <DynamicEnvScript env={dynamicEnv} />
-      </head>
-      <body>{children}</body>
+      </body>
     </html>
   );
 }

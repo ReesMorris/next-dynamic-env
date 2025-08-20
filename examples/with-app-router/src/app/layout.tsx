@@ -9,10 +9,10 @@ interface LayoutProps {
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang='en'>
-      <head>
+      <body>
+        {children}
         <DynamicEnvScript env={dynamicEnv} />
-      </head>
-      <body>{children}</body>
+      </body>
     </html>
   );
 }
