@@ -178,7 +178,11 @@ const dynamicEnv = createDynamicEnv({
 - **On Server**: Both `server` and `client` variables are accessible
 - **On Client**: 
   - `client` variables are accessible
-  - `server` variables throw an error in development, return `undefined` in production
+  - `server` variables behavior depends on settings:
+    - With `onValidationError: 'throw'` (default): Throws error in development
+    - With `onValidationError: 'warn'`: Logs warning and returns `undefined`
+    - With custom handler: Logs warning and returns `undefined`
+    - In production: Always returns `undefined` silently
   - The `__raw` property only includes client variables
 
 ### `DynamicEnvScript`
@@ -342,6 +346,28 @@ const dynamicEnv = createDynamicEnv({
 - Use the `server` object for sensitive variables (API keys, secrets, database URLs)
 - Use the `client` object only for public configuration
 - The library enforces this separation - server variables cannot be accessed on the client
+
+For development flexibility, you can use `onValidationError: 'warn'` to avoid exceptions:
+
+```typescript
+const dynamicEnv = createDynamicEnv({
+  schema: z.object({
+    API_URL: z.string(),
+    SECRET_KEY: z.string(),
+  }),
+  client: {
+    API_URL: process.env.API_URL,
+  },
+  server: {
+    SECRET_KEY: process.env.SECRET_KEY,
+  },
+  onValidationError: 'warn' // Warns instead of throwing in development
+});
+
+// In a client component:
+console.log(dynamicEnv.API_URL);    // ✅ Works: "https://api.example.com"
+console.log(dynamicEnv.SECRET_KEY); // ⚠️ Warns in dev, returns undefined
+```
 
 ```typescript
 // ✅ Correct: Secrets are kept in server object

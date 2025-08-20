@@ -27,7 +27,7 @@ export const Client = () => {
         <strong>FEATURES:</strong> {dynamicEnv.FEATURES.join(', ')}
       </div>
 
-      {/* <div className='env-var'>
+      <div className='env-var'>
         <span className='client-indicator server small'>Server Variable</span>
         <strong>DATABASE_URL:</strong> {dynamicEnv.DATABASE_URL}
       </div>
@@ -35,7 +35,7 @@ export const Client = () => {
       <div className='env-var'>
         <span className='client-indicator server small'>Server Variable</span>
         <strong>SECRET_KEY:</strong> {dynamicEnv.SECRET_KEY}
-      </div> */}
+      </div>
     </div>
   );
 };

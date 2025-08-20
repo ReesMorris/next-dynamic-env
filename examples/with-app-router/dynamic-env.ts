@@ -26,5 +26,6 @@ export const dynamicEnv = createDynamicEnv({
     // These would only be accessible on the server
     DATABASE_URL: process.env.DATABASE_URL,
     SECRET_KEY: process.env.SECRET_KEY
-  }
+  },
+  onValidationError: 'warn'
 });
