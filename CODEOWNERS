@@ -1,0 +1,21 @@
+# CODEOWNERS file for next-dynamic-env
+# These owners will be requested for review when someone opens a pull request
+
+# Global owners for all files
+* @reesmorris
+
+# Package source code
+/packages/ @reesmorris
+
+# Documentation
+/README.md @reesmorris
+/CHANGELOG.md @reesmorris
+*.md @reesmorris
+
+# CI/CD and configuration
+/.github/ @reesmorris
+/package.json @reesmorris
+/tsconfig.json @reesmorris
+
+# Examples require careful review
+/examples/ @reesmorris
