@@ -4,12 +4,13 @@ import { DynamicEnvScript } from './dynamic-env-script';
 
 // Mock Next.js Script component
 vi.mock('next/script', () => ({
-  default: ({ dangerouslySetInnerHTML, ...props }: any) => {
+  default: ({ children, dangerouslySetInnerHTML, ...props }: any) => {
     // Extract the script content and execute it for testing
-    if (dangerouslySetInnerHTML?.__html) {
+    const scriptContent = children || dangerouslySetInnerHTML?.__html;
+    if (scriptContent) {
       try {
         // biome-ignore lint/security/noGlobalEval: Needed for testing
-        eval(dangerouslySetInnerHTML.__html);
+        eval(scriptContent);
       } catch (e) {
         console.error('Error executing script:', e);
       }
@@ -20,13 +21,6 @@ vi.mock('next/script', () => ({
 
 describe('DynamicEnvScript', () => {
   beforeEach(() => {
-    // Clean up window object
-    Object.keys(window).forEach(key => {
-      if (key.startsWith('__') && key.includes('ENV')) {
-        delete (window as any)[key];
-      }
-    });
-
     // Clear console mocks
     vi.clearAllMocks();
   });

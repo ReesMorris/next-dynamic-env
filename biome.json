@@ -157,6 +157,9 @@
           "correctness": {
             "useUniqueElementIds": "off"
           },
+          "performance": {
+            "useTopLevelRegex": "off"
+          },
           "style": {
             "noNonNullAssertion": "off"
           },

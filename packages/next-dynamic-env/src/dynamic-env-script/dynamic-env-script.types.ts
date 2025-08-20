@@ -1,6 +1,6 @@
 import type { DynamicEnv, EnvVars } from '../types';
 
-export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
+export interface DynamicEnvScriptProps<T = EnvVars> {
   /**
    * The ID of the script tag
    * @default 'next-dynamic-env-script'
@@ -11,7 +11,7 @@ export interface DynamicEnvScriptProps<T extends EnvVars = EnvVars> {
    * The environment variables object to inject into the client.
    * Can be either a plain object or the result of createDynamicEnv()
    */
-  env: DynamicEnv<T> | EnvVars;
+  env: DynamicEnv<T> | T | EnvVars;
 
   /**
    * Optional callback for missing variables (only called in development)

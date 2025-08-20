@@ -16,8 +16,15 @@ export const Server = () => {
       </div>
 
       <div className='env-var'>
-        {/** biome-ignore lint/suspicious/noExplicitAny: This is an example */}
-        <strong>NOT_EXPOSED:</strong> {(dynamicEnv as any).NOT_EXPOSED}
+        <strong>PORT:</strong> {dynamicEnv.PORT}
+      </div>
+
+      <div className='env-var'>
+        <strong>DEBUG:</strong> {dynamicEnv.DEBUG ? 'true' : 'false'}
+      </div>
+
+      <div className='env-var'>
+        <strong>FEATURES:</strong> {dynamicEnv.FEATURES.join(', ')}
       </div>
     </div>
   );

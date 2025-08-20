@@ -24,17 +24,21 @@ import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
  * }
  * ```
  */
-export function DynamicEnvScript<T extends EnvVars = EnvVars>({
+export function DynamicEnvScript<T = EnvVars>({
   id = 'next-dynamic-env-script',
   env,
   onMissingVar,
   varName = DEFAULT_WINDOW_ENV_VAR_NAME
 }: DynamicEnvScriptProps<T>) {
   // Extract raw values if env is from createDynamicEnv, otherwise use as-is
-  const rawEnv = '__raw' in env ? (env as DynamicEnv<T>).__raw : env;
+  const rawEnv = (
+    env && typeof env === 'object' && '__raw' in env
+      ? (env as DynamicEnv<unknown>).__raw
+      : env
+  ) as Record<string, unknown>;
 
   // Warn in dev if vars are missing
-  if (process.env.NODE_ENV === 'development' && onMissingVar) {
+  if (process.env.NODE_ENV === 'development' && onMissingVar && rawEnv) {
     Object.entries(rawEnv).forEach(([key, value]) => {
       if (value === undefined || value === null || value === '') {
         onMissingVar(key);

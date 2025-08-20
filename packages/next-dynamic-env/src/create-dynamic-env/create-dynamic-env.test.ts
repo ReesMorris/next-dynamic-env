@@ -1,18 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 import { createDynamicEnv } from './create-dynamic-env';
 
 describe('createDynamicEnv', () => {
-  beforeEach(() => {
-    // Clean up window object before each test (if defined)
-    if (typeof window !== 'undefined') {
-      Object.keys(window).forEach(key => {
-        if (key.startsWith('__') && key.includes('ENV')) {
-          delete (window as any)[key];
-        }
-      });
-    }
-  });
-
   describe('server-side behavior', () => {
     beforeEach(() => {
       // Mock server environment
@@ -190,6 +180,215 @@ describe('createDynamicEnv', () => {
       const dynamicEnv = createDynamicEnv(envVars);
 
       expect(dynamicEnv.__raw).toBe(envVars);
+    });
+  });
+
+  describe('Zod validation', () => {
+    describe('server-side validation', () => {
+      beforeEach(() => {
+        // Mock server environment
+        vi.stubGlobal('window', undefined);
+      });
+
+      it('should validate environment variables with Zod schema', () => {
+        const schema = z.object({
+          API_URL: z.string().url(),
+          PORT: z.coerce.number().int().positive(),
+          DEBUG: z.coerce.boolean().default(false)
+        });
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: 'https://api.example.com',
+            PORT: '3000',
+            DEBUG: 'true'
+          }
+        });
+
+        expect(dynamicEnv.API_URL).toBe('https://api.example.com');
+        expect(dynamicEnv.PORT).toBe(3000);
+        expect(dynamicEnv.DEBUG).toBe(true);
+      });
+
+      it('should apply default values from schema', () => {
+        const schema = z.object({
+          PORT: z.coerce.number().default(8080),
+          DEBUG: z.coerce.boolean().default(false)
+        });
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {}
+        });
+
+        expect(dynamicEnv.PORT).toBe(8080);
+        expect(dynamicEnv.DEBUG).toBe(false);
+      });
+
+      it('should transform values with Zod transforms', () => {
+        const schema = z.object({
+          FEATURES: z.string().transform(s => s.split(','))
+        });
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            FEATURES: 'auth,api,ui'
+          }
+        });
+
+        expect(dynamicEnv.FEATURES).toEqual(['auth', 'api', 'ui']);
+      });
+
+      it('should throw error on validation failure when configured', () => {
+        const schema = z.object({
+          API_URL: z.string().url()
+        });
+
+        expect(() => {
+          createDynamicEnv({
+            schema,
+            runtimeEnv: {
+              API_URL: 'not-a-url'
+            },
+            onValidationError: 'throw'
+          });
+        }).toThrow();
+      });
+
+      it('should warn on validation failure when configured', () => {
+        const consoleSpy = vi
+          .spyOn(console, 'warn')
+          .mockImplementation(() => {});
+
+        const schema = z.object({
+          API_URL: z.string().url()
+        });
+
+        createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: 'not-a-url'
+          },
+          onValidationError: 'warn'
+        });
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+          expect.stringContaining('Environment validation failed')
+        );
+
+        consoleSpy.mockRestore();
+      });
+
+      it('should call custom error handler', () => {
+        const errorHandler = vi.fn();
+
+        const schema = z.object({
+          API_URL: z.string().url()
+        });
+
+        createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: 'not-a-url'
+          },
+          onValidationError: errorHandler
+        });
+
+        expect(errorHandler).toHaveBeenCalled();
+      });
+
+      it('should skip validation when configured', () => {
+        const schema = z.object({
+          API_URL: z.string().url()
+        });
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: 'not-a-url'
+          },
+          skipValidation: true
+        });
+
+        expect(dynamicEnv.API_URL).toBe('not-a-url');
+      });
+
+      it('should have __raw property with original string values', () => {
+        const schema = z.object({
+          API_URL: z.string().url(),
+          PORT: z.coerce.number()
+        });
+
+        const runtimeEnv = {
+          API_URL: 'https://api.example.com',
+          PORT: '3000'
+        };
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv
+        });
+
+        // __raw should contain the original string values, not transformed ones
+        expect(dynamicEnv.__raw).toEqual(runtimeEnv);
+        // But accessing properties should return transformed values
+        expect(dynamicEnv.PORT).toBe(3000);
+      });
+    });
+
+    describe('client-side validation', () => {
+      beforeEach(() => {
+        // Mock client environment
+        vi.stubGlobal('window', {});
+      });
+
+      it('should skip initial validation on client side', () => {
+        const schema = z.object({
+          API_URL: z.string().url(),
+          PORT: z.coerce.number()
+        });
+
+        // This should not throw even though values are undefined
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: undefined,
+            PORT: undefined
+          }
+        });
+
+        // Values should be undefined (not validated/transformed)
+        expect(dynamicEnv.API_URL).toBeUndefined();
+        expect(dynamicEnv.PORT).toBeUndefined();
+      });
+
+      it('should validate window values when accessed', () => {
+        const schema = z.object({
+          API_URL: z.string().url(),
+          PORT: z.coerce.number()
+        });
+
+        vi.stubGlobal('window', {
+          __NEXT_DYNAMIC_ENV__: {
+            API_URL: 'https://api.example.com',
+            PORT: '8080'
+          }
+        });
+
+        const dynamicEnv = createDynamicEnv({
+          schema,
+          runtimeEnv: {
+            API_URL: undefined,
+            PORT: undefined
+          }
+        });
+
+        // Values from window should be validated
+        expect(dynamicEnv.API_URL).toBe('https://api.example.com');
+        expect(dynamicEnv.PORT).toBe(8080);
+      });
     });
   });
 });

@@ -1,6 +1,6 @@
+import { dynamicEnv } from '@/dynamic-env';
 import { DynamicEnvScript } from 'next-dynamic-env';
 import './globals.css';
-import { dynamicEnv } from '@/dynamic-env';
 
 interface LayoutProps {
   children: React.ReactNode;

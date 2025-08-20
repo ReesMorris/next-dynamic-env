@@ -2,24 +2,26 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy workspace files
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy workspace root files
 COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY tsconfig.json ./
-COPY tsup.config.ts ./
 
-# Copy library source
-COPY src ./src
+# Copy packages
+COPY packages ./packages
 
 # Copy example app
 COPY examples/with-app-router ./examples/with-app-router
 
-# Install dependencies
-RUN npm install -g pnpm
+# Install all dependencies (needed for workspace)
 RUN pnpm install --frozen-lockfile
 
-# Build library first
+# Build the library package
+WORKDIR /app/packages/next-dynamic-env
 RUN pnpm build
 
 # Build the example app
@@ -30,14 +32,18 @@ RUN pnpm build
 FROM node:20-alpine
 WORKDIR /app
 
-# Copy built app
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy built app and necessary files
 COPY --from=builder /app/examples/with-app-router/.next ./.next
 COPY --from=builder /app/examples/with-app-router/public ./public
 COPY --from=builder /app/examples/with-app-router/package.json ./
+COPY --from=builder /app/examples/with-app-router/node_modules ./node_modules
 
-# Install production dependencies only
-RUN npm install -g pnpm
-RUN pnpm install --prod
+# Copy the built library (needed for runtime)
+COPY --from=builder /app/packages/next-dynamic-env/dist ./node_modules/next-dynamic-env/dist
+COPY --from=builder /app/packages/next-dynamic-env/package.json ./node_modules/next-dynamic-env/
 
 EXPOSE 3000
 
