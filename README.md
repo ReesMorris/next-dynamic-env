@@ -127,10 +127,7 @@ For code that runs before React hydration (like instrumentation files), use `wai
 import { waitForEnv } from 'next-dynamic-env';
 
 export async function register() {
-  const env = await waitForEnv({
-    requiredKeys: ['API_URL', 'APP_NAME'],
-    debug: true
-  });
+  const env = await waitForEnv();
 
   // Initialize monitoring, analytics, etc.
   console.log('App initialized with:', env);
