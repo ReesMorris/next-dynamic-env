@@ -1,9 +1,33 @@
+# Source files
 src/
-tsconfig.json
 tsup.config.ts
-.gitignore
-.git/
+tsconfig.json
+vitest.config.ts
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage/
+
+# Development files
+.turbo/
 node_modules/
 *.log
+.DS_Store
+
+# Config files
+biome.json
+.gitignore
+
+# Git
+.git/
+
+# Environment files
 .env
 .env.local
+.env.*
+
+# Keep only dist and README
+# dist/ and README.md are included via "files" in package.json
