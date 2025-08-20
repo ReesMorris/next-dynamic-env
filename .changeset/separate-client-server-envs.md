@@ -20,7 +20,7 @@ const env = createDynamicEnv({ client: {...}, server: {...} });
 
 // After
 const { clientEnv, serverEnv } = createDynamicEnv({ client: {...}, server: {...} });
-<DynamicEnvScript env={clientEnv} />
+<DynamicEnvScript clientEnv={clientEnv} />
 ```
 
 **Additional Improvements:**

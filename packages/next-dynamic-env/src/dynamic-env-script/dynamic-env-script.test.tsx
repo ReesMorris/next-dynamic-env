@@ -60,7 +60,7 @@ describe('DynamicEnvScript', () => {
   describe('rendering', () => {
     it('should render script with default id', () => {
       const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
-      const { container } = render(<DynamicEnvScript env={env} />);
+      const { container } = render(<DynamicEnvScript clientEnv={env} />);
 
       const script = container.querySelector('[data-testid="next-script"]');
       expect(script).toBeTruthy();
@@ -70,7 +70,7 @@ describe('DynamicEnvScript', () => {
     it('should render script with custom id', () => {
       const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
       const { container } = render(
-        <DynamicEnvScript env={env} id='custom-id' />
+        <DynamicEnvScript clientEnv={env} id='custom-id' />
       );
 
       const script = container.querySelector('[data-testid="next-script"]');
@@ -80,7 +80,7 @@ describe('DynamicEnvScript', () => {
 
     it('should use beforeInteractive strategy', () => {
       const env = createMockClientEnv({ API_URL: 'https://api.example.com' });
-      const { container } = render(<DynamicEnvScript env={env} />);
+      const { container } = render(<DynamicEnvScript clientEnv={env} />);
 
       const script = container.querySelector('[data-testid="next-script"]');
       expect(script).toBeTruthy();
@@ -95,7 +95,7 @@ describe('DynamicEnvScript', () => {
         APP_NAME: 'Test App'
       });
 
-      render(<DynamicEnvScript env={env} />);
+      render(<DynamicEnvScript clientEnv={env} />);
 
       expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
@@ -110,7 +110,7 @@ describe('DynamicEnvScript', () => {
         APP_NAME: 'Test App'
       });
 
-      render(<DynamicEnvScript env={env} />);
+      render(<DynamicEnvScript clientEnv={env} />);
 
       expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
@@ -130,7 +130,7 @@ describe('DynamicEnvScript', () => {
         NULL_VAR: null as any
       });
 
-      render(<DynamicEnvScript env={env} />);
+      render(<DynamicEnvScript clientEnv={env} />);
 
       expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         STRING_VAR: 'text',
@@ -154,7 +154,7 @@ describe('DynamicEnvScript', () => {
         ANOTHER_SAFE: 'another safe value'
       });
 
-      render(<DynamicEnvScript env={env} />);
+      render(<DynamicEnvScript clientEnv={env} />);
 
       expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         SAFE_VAR: 'safe value',
@@ -176,7 +176,7 @@ describe('DynamicEnvScript', () => {
         APP_NAME: 'Test App'
       });
 
-      render(<DynamicEnvScript env={env} />);
+      render(<DynamicEnvScript clientEnv={env} />);
 
       expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
@@ -202,7 +202,7 @@ describe('DynamicEnvScript', () => {
         VALID_VAR: 'valid'
       });
 
-      render(<DynamicEnvScript env={env} onMissingVar={onMissingVar} />);
+      render(<DynamicEnvScript clientEnv={env} onMissingVar={onMissingVar} />);
 
       expect(onMissingVar).toHaveBeenCalledTimes(3);
       expect(onMissingVar).toHaveBeenCalledWith('UNDEFINED_VAR');
@@ -221,7 +221,7 @@ describe('DynamicEnvScript', () => {
         UNDEFINED_VAR: undefined
       });
 
-      render(<DynamicEnvScript env={env} onMissingVar={onMissingVar} />);
+      render(<DynamicEnvScript clientEnv={env} onMissingVar={onMissingVar} />);
 
       expect(onMissingVar).not.toHaveBeenCalled();
     });

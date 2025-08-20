@@ -26,14 +26,14 @@ import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
  */
 export function DynamicEnvScript<T extends ProcessedEnv = ProcessedEnv>({
   id = 'next-dynamic-env-script',
-  env,
+  clientEnv,
   onMissingVar
 }: DynamicEnvScriptProps<T>) {
   // Extract and clean client environment values in a single pass
   const cleanEnv: ProcessedEnv = {};
-  for (const key of Object.keys(env)) {
+  for (const key of Object.keys(clientEnv)) {
     if (key !== '__raw' && key !== '__isClient') {
-      const value = env[key as keyof T];
+      const value = clientEnv[key as keyof T];
 
       // Warn in dev if var is missing
       if (

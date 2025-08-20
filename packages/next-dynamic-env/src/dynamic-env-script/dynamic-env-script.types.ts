@@ -17,7 +17,7 @@ export interface DynamicEnvScriptProps<T extends ProcessedEnv = ProcessedEnv> {
    * <DynamicEnvScript env={clientEnv} />
    * ```
    */
-  env: ClientEnv<T>;
+  clientEnv: ClientEnv<T>;
 
   /**
    * Optional callback for missing variables (only called in development)
