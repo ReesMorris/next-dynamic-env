@@ -15,7 +15,7 @@ This library enforces a strict separation between server and client environment 
 - 🚀 **Runtime Configuration** - Change environment variables without rebuilding
 - 🔐 **Server/Client Separation** - Keep secrets safe with explicit separation
 - 🔒 **Type Safety** - Full TypeScript support with autocompletion
-- ✅ **Validation** - Required Zod schema validation for runtime safety
+- ✅ **Validator Agnostic** - Use Zod, Yup, Valibot, or any [standard-schema](https://github.com/standard-schema/standard-schema) compatible validator
 - 🎯 **Universal** - Works with App Router, Pages Router, instrumentation, and middleware
 - 🐳 **Docker Ready** - Perfect for containerized deployments
 - ⏳ **Async Loading** - Wait for env vars in files that run before the script (e.g., instrumentation files)
@@ -36,32 +36,30 @@ bun add next-dynamic-env
 
 ### 1. Create your configuration
 
-Call `createDynamicEnv` to define your environment variables:
+Call `createDynamicEnv` to define your environment variables. You can use any validator that supports [standard-schema](https://github.com/standard-schema/standard-schema) (Zod, Yup, Valibot, etc.) or no validation at all:
 
 ```typescript
 // dynamic-env.ts
 import { createDynamicEnv } from 'next-dynamic-env';
-import { z } from 'zod';
+import { z } from 'zod';  // or import * as yup from 'yup', or any standard-schema validator
 
 export const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Client variables (exposed to browser)
-    APP_NAME: z.string().min(1, 'APP_NAME is required'),
-    API_URL: z.string().url('API_URL must be a valid URL'),
-    DEBUG: z.coerce.boolean().default(false),
-    
-    // Server variables (never exposed to browser)
-    DATABASE_URL: z.string().url(),
-    API_SECRET: z.string().min(32),
-  }),
   client: {
-    APP_NAME: process.env.APP_NAME,
-    API_URL: process.env.API_URL,
-    DEBUG: process.env.DEBUG,
+    // With validation (type-safe)
+    APP_NAME: [process.env.APP_NAME, z.string().min(1)],
+    API_URL: [process.env.API_URL, z.string().url()],
+    DEBUG: [process.env.DEBUG, z.coerce.boolean().default(false)],
+    
+    // Without validation (raw string | undefined)
+    ANALYTICS_ID: process.env.ANALYTICS_ID,
   },
   server: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    API_SECRET: process.env.API_SECRET,
+    // Server variables (never exposed to browser)
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    API_SECRET: [process.env.API_SECRET, z.string().min(32)],
+    
+    // Raw value without validation
+    LOG_LEVEL: process.env.LOG_LEVEL,
   }
 });
 ```
@@ -154,31 +152,36 @@ Creates a type-safe environment configuration with server/client separation.
 #### Config Options
 | Option | Required | Default | Description |
 | ------ | -------- | ------- | ----------- |
-| `schema` | Yes | - | Zod schema defining all environment variables |
-| `client` | Yes | - | Object with client-side environment variables |
-| `server` | Yes | - | Object with server-only environment variables |
+| `client` | No | `{}` | Client-side environment variables (exposed to browser) |
+| `server` | No | `{}` | Server-only environment variables (never exposed to browser) |
 | `onValidationError` | No | `'throw'` | Error handling: `'throw'`, `'warn'`, or custom function |
 | `skipValidation` | No | `false` | Skip validation (useful for build time) |
 | `emptyStringAsUndefined` | No | `true` | Convert empty strings to undefined |
 
+#### Entry Format
+
+Each environment variable can be defined in three ways:
+
 ```typescript
 const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Define all variables in one schema
-    API_URL: z.string().url(),
-    PORT: z.coerce.number(),
-    DATABASE_URL: z.string(),
-  }),
   client: {
-    // Only these are exposed to browser
-    API_URL: process.env.API_URL,
-    PORT: process.env.PORT,
+    // 1. With validation - [value, schema]
+    API_URL: [process.env.API_URL, z.string().url()],
+    
+    // 2. Without validation - raw value
+    APP_NAME: process.env.APP_NAME,
+    
+    // 3. With transformation
+    FEATURES: [
+      process.env.FEATURES,
+      z.string().transform(val => val.split(','))
+    ],
   },
   server: {
-    // These are never exposed to browser
-    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    SECRET: process.env.SECRET,  // No validation
   },
-  onValidationError: 'warn', // or 'throw' or custom function
+  onValidationError: 'warn',
 });
 ```
 
@@ -242,6 +245,58 @@ Check out the [examples](./examples) directory:
 - [App Router](./examples/with-app-router) - Next.js 15 with App Router
 - [Pages Router](./examples/with-pages-router) - Next.js with Pages Router
 
+## Using Different Validators
+
+`next-dynamic-env` works with any validator that supports the [standard-schema](https://github.com/standard-schema/standard-schema) specification, including Zod, Yup, Valibot, and more.
+
+### With Zod
+
+```typescript
+import { z } from 'zod';
+
+export const dynamicEnv = createDynamicEnv({
+  client: {
+    API_URL: [process.env.API_URL, z.string().url()],
+    PORT: [process.env.PORT, z.coerce.number().default(3000)],
+  }
+});
+```
+
+### With Yup
+
+```typescript
+import * as yup from 'yup';
+
+export const dynamicEnv = createDynamicEnv({
+  client: {
+    API_URL: [process.env.API_URL, yup.string().url().required()],
+    PORT: [process.env.PORT, yup.number().positive().default(3000)],
+  }
+});
+```
+
+### Mixed Validators
+
+You can even mix different validators in the same configuration:
+
+```typescript
+import { z } from 'zod';
+import * as yup from 'yup';
+
+export const dynamicEnv = createDynamicEnv({
+  client: {
+    // Zod for URL validation
+    API_URL: [process.env.API_URL, z.string().url()],
+    
+    // Yup for number validation
+    TIMEOUT: [process.env.TIMEOUT, yup.number().min(1000).max(30000)],
+    
+    // No validation
+    APP_NAME: process.env.APP_NAME,
+  }
+});
+```
+
 ## Empty String Handling
 
 By default, `next-dynamic-env` converts empty strings to `undefined` before validation. This prevents common issues with optional fields:
@@ -249,13 +304,10 @@ By default, `next-dynamic-env` converts empty strings to `undefined` before vali
 ```typescript
 // Environment: SENTRY_URL=""
 const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    SENTRY_URL: z.string().url().optional(), // Would fail with empty string
-  }),
   client: {
-    SENTRY_URL: process.env.SENTRY_URL, // "" becomes undefined
+    // Would fail with empty string without conversion
+    SENTRY_URL: [process.env.SENTRY_URL, z.string().url().optional()],
   },
-  server: {},
   // emptyStringAsUndefined: true (default)
 });
 
@@ -266,35 +318,29 @@ You can disable this behavior if needed:
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
-  // ...
+  client: {
+    SENTRY_URL: [process.env.SENTRY_URL, z.string().optional()],
+  },
   emptyStringAsUndefined: false, // Keep empty strings as-is
 });
 ```
 
-## Validation with Zod
+## Validation
 
-The schema validates all environment variables at runtime:
+Validation happens at runtime when environment variables are accessed:
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Client variables with validation
-    API_URL: z.string().url('Invalid API URL'),
-    TIMEOUT: z.coerce.number().min(1000).max(30000),
-    FEATURES: z.string().transform(val => val.split(',')),
-    
-    // Server variables with validation
-    DATABASE_URL: z.string().url(),
-    RETRY_COUNT: z.coerce.number().int().positive()
-  }),
   client: {
-    API_URL: process.env.API_URL,
-    TIMEOUT: process.env.TIMEOUT,
-    FEATURES: process.env.FEATURES,
+    // Client variables with validation
+    API_URL: [process.env.API_URL, z.string().url('Invalid API URL')],
+    TIMEOUT: [process.env.TIMEOUT, z.coerce.number().min(1000).max(30000)],
+    FEATURES: [process.env.FEATURES, z.string().transform(val => val.split(','))],
   },
   server: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    RETRY_COUNT: process.env.RETRY_COUNT,
+    // Server variables with validation
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    RETRY_COUNT: [process.env.RETRY_COUNT, z.coerce.number().int().positive()],
   },
   onValidationError: (error) => {
     console.error('Configuration error:', error);
@@ -309,30 +355,22 @@ const dynamicEnv = createDynamicEnv({
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
-  schema: z.object({
+  client: {
     // Transform comma-separated string to array
-    FEATURES: z.string().transform(val => val.split(',')),
+    FEATURES: [process.env.FEATURES, z.string().transform(val => val.split(','))],
     
     // Parse JSON configuration
-    CONFIG: z.string().transform(val => JSON.parse(val)),
+    CONFIG: [process.env.CONFIG, z.string().transform(val => JSON.parse(val))],
     
     // Convert to boolean
-    MAINTENANCE_MODE: z.coerce.boolean(),
+    MAINTENANCE_MODE: [process.env.MAINTENANCE_MODE, z.coerce.boolean()],
     
     // Default values
-    TIMEOUT: z.coerce.number().default(5000),
-    
-    // Server-only with transform
-    DB_POOL_SIZE: z.coerce.number().default(10),
-  }),
-  client: {
-    FEATURES: process.env.FEATURES,
-    CONFIG: process.env.CONFIG,
-    MAINTENANCE_MODE: process.env.MAINTENANCE_MODE,
-    TIMEOUT: process.env.TIMEOUT,
+    TIMEOUT: [process.env.TIMEOUT, z.coerce.number().default(5000)],
   },
   server: {
-    DB_POOL_SIZE: process.env.DB_POOL_SIZE,
+    // Server-only with transform
+    DB_POOL_SIZE: [process.env.DB_POOL_SIZE, z.coerce.number().default(10)],
   }
 });
 ```
