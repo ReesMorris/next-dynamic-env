@@ -250,36 +250,65 @@ describe('createEnvProxy', () => {
   });
 
   describe('__raw property', () => {
-    beforeEach(() => {
+    it('should always filter __raw to only client keys', () => {
+      // Test on server
       vi.mocked(isBrowser).mockReturnValue(false);
-    });
 
-    it('should provide access to raw values via __raw', () => {
       const envVars = {
         API_URL: 'https://api.example.com',
-        APP_NAME: 'Test App'
+        APP_NAME: 'Test App',
+        DATABASE_URL: 'postgres://localhost',
+        SECRET_KEY: 'secret-123'
       };
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL', 'APP_NAME'],
+        serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
 
-      expect(proxy.__raw).toEqual(envVars);
-    });
-
-    it('should return the same object reference for __raw', () => {
-      const envVars = {
+      // __raw should only include client keys, even on server
+      expect(proxy.__raw).toEqual({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
+      });
+      expect(proxy.__raw.DATABASE_URL).toBeUndefined();
+      expect(proxy.__raw.SECRET_KEY).toBeUndefined();
+    });
+
+    it('should filter __raw with rawEnvVars when provided', () => {
+      vi.mocked(isBrowser).mockReturnValue(false);
+
+      const envVars = {
+        API_URL: 'processed-value',
+        APP_NAME: 'processed-app',
+        DATABASE_URL: 'processed-db',
+        SECRET_KEY: 'processed-secret'
+      };
+
+      const rawEnvVars = {
+        API_URL: 'raw-value',
+        APP_NAME: 'raw-app',
+        DATABASE_URL: 'raw-db',
+        SECRET_KEY: 'raw-secret'
       };
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        rawEnvVars,
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL', 'APP_NAME'],
+        serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
 
-      expect(proxy.__raw).toBe(envVars);
+      // __raw should use rawEnvVars values but only include client keys
+      expect(proxy.__raw).toEqual({
+        API_URL: 'raw-value',
+        APP_NAME: 'raw-app'
+      });
+      expect(proxy.__raw.DATABASE_URL).toBeUndefined();
+      expect(proxy.__raw.SECRET_KEY).toBeUndefined();
     });
 
     it('should filter __raw to only client keys on client', () => {
@@ -310,6 +339,112 @@ describe('createEnvProxy', () => {
       });
       // Server keys should not be in __raw on client
       expect(proxy.__raw.SERVER_SECRET).toBeUndefined();
+    });
+
+    it('should handle empty clientKeys array', () => {
+      vi.mocked(isBrowser).mockReturnValue(false);
+
+      const envVars = {
+        API_URL: 'https://api.example.com',
+        APP_NAME: 'Test App'
+      };
+
+      const proxy = createEnvProxy({
+        envVars,
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: [],
+        serverKeys: ['API_URL', 'APP_NAME']
+      });
+
+      // __raw should be empty when no client keys are specified
+      expect(proxy.__raw).toEqual({});
+    });
+  });
+
+  describe('server variable access on client', () => {
+    beforeEach(() => {
+      vi.mocked(isBrowser).mockReturnValue(true);
+      vi.mocked(validateWindowValue).mockImplementation(({ value }) => value);
+    });
+
+    it('should throw error for server-only variables in development', () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const envVars = {
+        API_URL: 'https://api.example.com',
+        DATABASE_URL: 'postgres://localhost',
+        SECRET_KEY: 'secret-123'
+      };
+
+      const proxy = createEnvProxy({
+        envVars,
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL'],
+        serverKeys: ['DATABASE_URL', 'SECRET_KEY']
+      });
+
+      // Client variables should work
+      expect(proxy.API_URL).toBe('https://api.example.com');
+
+      // Server variables should throw in development
+      expect(() => proxy.DATABASE_URL).toThrow(
+        '❌ Attempted to access server-only environment variable "DATABASE_URL" on the client'
+      );
+      expect(() => proxy.SECRET_KEY).toThrow(
+        '❌ Attempted to access server-only environment variable "SECRET_KEY" on the client'
+      );
+
+      process.env.NODE_ENV = originalNodeEnv;
+    });
+
+    it('should return undefined for server-only variables in production', () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const envVars = {
+        API_URL: 'https://api.example.com',
+        DATABASE_URL: 'postgres://localhost',
+        SECRET_KEY: 'secret-123'
+      };
+
+      const proxy = createEnvProxy({
+        envVars,
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL'],
+        serverKeys: ['DATABASE_URL', 'SECRET_KEY']
+      });
+
+      // Client variables should work
+      expect(proxy.API_URL).toBe('https://api.example.com');
+
+      // Server variables should return undefined in production
+      expect(proxy.DATABASE_URL).toBeUndefined();
+      expect(proxy.SECRET_KEY).toBeUndefined();
+
+      process.env.NODE_ENV = originalNodeEnv;
+    });
+
+    it('should allow server variable access on server-side', () => {
+      vi.mocked(isBrowser).mockReturnValue(false);
+
+      const envVars = {
+        API_URL: 'https://api.example.com',
+        DATABASE_URL: 'postgres://localhost',
+        SECRET_KEY: 'secret-123'
+      };
+
+      const proxy = createEnvProxy({
+        envVars,
+        varName: '__NEXT_DYNAMIC_ENV__',
+        clientKeys: ['API_URL'],
+        serverKeys: ['DATABASE_URL', 'SECRET_KEY']
+      });
+
+      // All variables should be accessible on server
+      expect(proxy.API_URL).toBe('https://api.example.com');
+      expect(proxy.DATABASE_URL).toBe('postgres://localhost');
+      expect(proxy.SECRET_KEY).toBe('secret-123');
     });
   });
 

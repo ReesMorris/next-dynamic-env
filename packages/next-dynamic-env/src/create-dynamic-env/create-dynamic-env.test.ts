@@ -43,7 +43,7 @@ describe('createDynamicEnv with server/client separation', () => {
       expect(env.SERVER_VAR).toBe('server-value');
     });
 
-    it('should include all variables in __raw on server', () => {
+    it('should only include client variables in __raw', () => {
       const env = createDynamicEnv({
         schema: z.object({
           CLIENT_VAR: z.string(),
@@ -57,10 +57,11 @@ describe('createDynamicEnv with server/client separation', () => {
         }
       });
 
+      // __raw should always be filtered to only client variables
       expect(env.__raw).toEqual({
-        CLIENT_VAR: 'client-value',
-        SERVER_VAR: 'server-value'
+        CLIENT_VAR: 'client-value'
       });
+      expect(env.__raw.SERVER_VAR).toBeUndefined();
     });
 
     it('should apply transformations to both server and client vars', () => {

@@ -35,15 +35,14 @@ export const createEnvProxy = <T extends Record<string, unknown>>({
 }: CreateEnvProxyOptions<T>): DynamicEnv<T> => {
   const isClient = isBrowser();
 
-  // Filter raw values to only include client keys when on the client
+  // Always filter raw values to only include client keys
+  // This ensures server variables are never exposed in __raw
   const rawValues = rawEnvVars || envVars;
-  const filteredRawValues = isClient
-    ? Object.fromEntries(
-        Object.entries(rawValues).filter(([key]) =>
-          clientKeys.includes(key as keyof T)
-        )
-      )
-    : rawValues;
+  const filteredRawValues = Object.fromEntries(
+    Object.entries(rawValues).filter(([key]) =>
+      clientKeys.includes(key as keyof T)
+    )
+  );
 
   return new Proxy({ __raw: filteredRawValues } as DynamicEnv<T>, {
     get(target, key: string | symbol) {
