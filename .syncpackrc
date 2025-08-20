@@ -53,5 +53,12 @@
     "peerDependencies",
     "resolutions",
     "scripts"
+  ],
+  "versionGroups": [
+    {
+      "label": "Ignore peerDependencies",
+      "dependencyTypes": ["peer"],
+      "isIgnored": true
+    }
   ]
 }
