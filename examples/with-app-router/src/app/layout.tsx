@@ -1,4 +1,4 @@
-import { dynamicEnv } from '@/dynamic-env';
+import { clientEnv } from '@/dynamic-env';
 import { DynamicEnvScript } from 'next-dynamic-env';
 import './globals.css';
 
@@ -11,7 +11,7 @@ export default function RootLayout({ children }: LayoutProps) {
     <html lang='en'>
       <body>
         {children}
-        <DynamicEnvScript env={dynamicEnv} />
+        <DynamicEnvScript env={clientEnv} />
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
 import { Client } from './client';
-import { Server } from './server';
 
 const HomePage = () => {
   return (
@@ -17,7 +16,7 @@ const HomePage = () => {
         </p>
       </div>
 
-      <Server />
+      {/* <Server /> */}
       <Client />
 
       <div className='container'>
