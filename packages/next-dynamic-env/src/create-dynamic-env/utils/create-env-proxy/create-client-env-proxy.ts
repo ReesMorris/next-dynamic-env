@@ -1,3 +1,4 @@
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
 import type { ClientEnv, ProcessedEnv } from '@/types';
 import { isBrowser } from '@/utils';
 
@@ -6,8 +7,8 @@ import { isBrowser } from '@/utils';
  *
  * This proxy:
  * - On server: Returns processed client values
- * - On browser: Returns values from window.__NEXT_DYNAMIC_ENV__
- * - Provides access to raw values via __raw property
+ * - On browser: Returns values from `window[DEFAULT_WINDOW_ENV_VAR_NAME]`
+ * - Provides access to raw values via `__raw` property
  *
  * @param processedEnv - Processed client environment variables
  * @param rawEnv - Raw client environment variable values
@@ -31,11 +32,7 @@ export const createClientEnvProxy = <T extends ProcessedEnv>(
 
       // On the browser, get client variables from window if available
       if (isBrowser()) {
-        const windowEnv = (
-          window as unknown as {
-            __NEXT_DYNAMIC_ENV__?: Record<string, unknown>;
-          }
-        ).__NEXT_DYNAMIC_ENV__;
+        const windowEnv = window[DEFAULT_WINDOW_ENV_VAR_NAME];
         if (windowEnv && key in windowEnv) {
           return windowEnv[key];
         }

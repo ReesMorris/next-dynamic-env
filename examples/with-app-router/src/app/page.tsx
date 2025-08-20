@@ -1,4 +1,5 @@
 import { Client } from './client';
+import { Server } from './server';
 
 const HomePage = () => {
   return (

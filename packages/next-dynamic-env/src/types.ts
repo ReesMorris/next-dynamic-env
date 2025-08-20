@@ -1,9 +1,19 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec';
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from './constants';
 
 /**
  * Processed environment variables (after validation/transformation)
  */
 export type ProcessedEnv = Record<string, unknown>;
+
+/**
+ * Global type augmentation for window object
+ */
+declare global {
+  interface Window {
+    [DEFAULT_WINDOW_ENV_VAR_NAME]?: ProcessedEnv;
+  }
+}
 
 /**
  * Represents a validation error for an environment variable

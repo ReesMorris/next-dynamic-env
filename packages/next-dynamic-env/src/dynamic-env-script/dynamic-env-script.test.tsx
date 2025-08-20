@@ -1,3 +1,4 @@
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
 import { render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClientEnv, ProcessedEnv } from '../types';
@@ -96,7 +97,7 @@ describe('DynamicEnvScript', () => {
 
       render(<DynamicEnvScript env={env} />);
 
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
       });
@@ -111,12 +112,12 @@ describe('DynamicEnvScript', () => {
 
       render(<DynamicEnvScript env={env} />);
 
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
       });
       expect(
-        (window as any).__NEXT_DYNAMIC_ENV__.UNDEFINED_VAR
+        window[DEFAULT_WINDOW_ENV_VAR_NAME]?.UNDEFINED_VAR
       ).toBeUndefined();
     });
 
@@ -131,7 +132,7 @@ describe('DynamicEnvScript', () => {
 
       render(<DynamicEnvScript env={env} />);
 
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         STRING_VAR: 'text',
         NUMBER_VAR: 123,
         BOOLEAN_VAR: true,
@@ -155,11 +156,11 @@ describe('DynamicEnvScript', () => {
 
       render(<DynamicEnvScript env={env} />);
 
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         SAFE_VAR: 'safe value',
         ANOTHER_SAFE: 'another safe value'
       });
-      expect((window as any).__NEXT_DYNAMIC_ENV__.UNSAFE_VAR).toBeUndefined();
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]?.UNSAFE_VAR).toBeUndefined();
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         '[next-dynamic-env] Env var "UNSAFE_VAR" contains </script> tag and was filtered out'
@@ -177,7 +178,7 @@ describe('DynamicEnvScript', () => {
 
       render(<DynamicEnvScript env={env} />);
 
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toEqual({
+      expect(window[DEFAULT_WINDOW_ENV_VAR_NAME]).toEqual({
         API_URL: 'https://api.example.com',
         APP_NAME: 'Test App'
       });
