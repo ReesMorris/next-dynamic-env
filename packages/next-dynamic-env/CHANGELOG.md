@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 0.2.2
+
+### Patch Changes
+
+- [`e8e9798`](https://github.com/ReesMorris/next-dynamic-env/commit/e8e9798ddfab70869f962b3cd7cee2f0248c9779) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Test changeset to verify automated release workflow - improved CI/CD pipeline configuration
+
 ## 0.2.1
 
 ### Patch Changes
