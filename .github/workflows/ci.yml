@@ -10,8 +10,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    if: |
-      !contains(github.event.head_commit.message, 'chore: release package')
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -21,31 +19,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
       
+      # Skip tests for release commits but still report success
+      - name: Skip tests for release commits
+        if: contains(github.event.head_commit.message, 'chore:\srelease\spackage')
+        run: |
+          echo "Skipping tests for release commit"
+          echo "This is a changeset release PR - no tests needed"
+          exit 0
+      
       - name: Setup pnpm
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         uses: pnpm/action-setup@v4
         with:
           version: 10.15.0
       
       - name: Setup Node.js
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
           cache: 'pnpm'
       
       - name: Install dependencies
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         run: pnpm install --frozen-lockfile
       
       - name: Run linting (package only)
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         run: |
           cd packages/next-dynamic-env
           pnpm lint
       
       - name: Run type checking (package only)
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         run: |
           cd packages/next-dynamic-env
           pnpm typecheck
       
       - name: Run tests
+        if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         run: |
           cd packages/next-dynamic-env
           pnpm test
