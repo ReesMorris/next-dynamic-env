@@ -28,7 +28,6 @@ describe('isConfigWithSchema', () => {
         },
         server: {},
         onValidationError: 'throw' as const,
-        varName: 'CUSTOM_ENV',
         skipValidation: false
       };
 

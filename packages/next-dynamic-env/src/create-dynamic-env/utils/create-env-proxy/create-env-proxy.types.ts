@@ -19,11 +19,6 @@ export interface CreateEnvProxyOptions<
   rawEnvVars?: Record<string, string | undefined>;
 
   /**
-   * The name of the environment variable for reference in logs and errors.
-   */
-  varName: string;
-
-  /**
    * Optional Zod schema for validating environment variables.
    */
   schema?: z.ZodObject<z.ZodRawShape>;

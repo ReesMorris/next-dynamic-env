@@ -150,7 +150,6 @@ Creates a type-safe environment configuration with server/client separation.
 - `server` (required) - Object with server-only environment variables
 - `onValidationError` - Error handling: `'throw'` (default), `'warn'`, or custom function
 - `skipValidation` - Skip validation (useful for build time)
-- `varName` - Custom window variable name (default: `__NEXT_DYNAMIC_ENV__`)
 
 ```typescript
 const dynamicEnv = createDynamicEnv({
@@ -188,7 +187,6 @@ React component that injects environment variables into the client.
 #### Props
 
 - `env` - The dynamic env object from `createDynamicEnv`
-- `varName` - Custom window variable name (must match the one in `createDynamicEnv`)
 - `onMissingVar` - Handler for missing required variables (dev only)
 - `id` - Script element ID (default: `next-dynamic-env-script`)
 
@@ -217,7 +215,6 @@ const env = await waitForEnv({
 
 - `timeout` - Maximum wait time in ms (default: 5000)
 - `interval` - Polling interval in ms (default: 50)
-- `varName` - Custom window variable name
 - `requiredKeys` - Array of required environment variable keys
 - `validate` - Custom validation function
 - `retries` - Number of retry attempts (default: 0)
@@ -263,35 +260,6 @@ const dynamicEnv = createDynamicEnv({
 ```
 
 ## Advanced Usage
-
-### Custom Window Variable Name
-
-```typescript
-const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    API_URL: z.string().url()
-  }),
-  client: {
-    API_URL: process.env.API_URL
-  },
-  server: {},
-  varName: '__MY_APP_CONFIG__'
-});
-
-// Also pass to DynamicEnvScript
-<DynamicEnvScript env={dynamicEnv} varName="__MY_APP_CONFIG__" />
-```
-
-If you use a custom variable name and want TypeScript support for direct window access:
-
-```typescript
-// In a .d.ts file or your types
-declare global {
-  interface Window {
-    __MY_APP_CONFIG__?: Record<string, string | undefined>;
-  }
-}
-```
 
 ### Transform Values
 

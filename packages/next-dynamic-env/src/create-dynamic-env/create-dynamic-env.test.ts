@@ -215,27 +215,6 @@ describe('createDynamicEnv with server/client separation', () => {
       expect(env.CLIENT_PORT).toBe(8080);
       expect(typeof env.CLIENT_PORT).toBe('number');
     });
-
-    it('should use custom varName for window object', () => {
-      global.window = {
-        MY_CUSTOM_ENV: {
-          CLIENT_VAR: 'custom-window-value'
-        }
-      } as any;
-
-      const env = createDynamicEnv({
-        schema: z.object({
-          CLIENT_VAR: z.string()
-        }),
-        client: {
-          CLIENT_VAR: 'default-value'
-        },
-        server: {},
-        varName: 'MY_CUSTOM_ENV'
-      });
-
-      expect(env.CLIENT_VAR).toBe('custom-window-value');
-    });
   });
 
   describe('Validation and error handling', () => {

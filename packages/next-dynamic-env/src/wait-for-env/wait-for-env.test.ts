@@ -28,15 +28,6 @@ describe('waitForEnv', () => {
         'Interval must be greater than 0 and less than timeout'
       );
     });
-
-    it('should throw error for invalid varName', () => {
-      expect(() => waitForEnv({ varName: '' })).toThrow(
-        'Variable name must be a non-empty string'
-      );
-      expect(() => waitForEnv({ varName: null as any })).toThrow(
-        'Variable name must be a non-empty string'
-      );
-    });
   });
 
   describe('memory leak prevention', () => {
@@ -363,13 +354,11 @@ describe('waitForEnv', () => {
       const err = error as WaitForEnvError;
 
       expect(err.code).toBe('TIMEOUT');
-      expect(err.varName).toBe('__NEXT_DYNAMIC_ENV__');
       expect(err.attempts).toBe(2);
       expect(err.missingKeys).toEqual(['API_URL', 'APP_NAME']);
 
       const debugInfo = err.getDebugInfo();
       expect(debugInfo).toContain('Error Code: TIMEOUT');
-      expect(debugInfo).toContain('Variable Name: __NEXT_DYNAMIC_ENV__');
       expect(debugInfo).toContain('Attempts: 2');
       expect(debugInfo).toContain('Missing Keys: API_URL, APP_NAME');
     });

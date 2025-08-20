@@ -1,4 +1,3 @@
-import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
 import type { DynamicEnv } from '@/types';
 import { isBrowser } from '@/utils';
 import type { z } from 'zod';
@@ -40,7 +39,6 @@ export function createDynamicEnv<T extends z.ZodObject<z.ZodRawShape>>(
     server = {},
     client = {},
     onValidationError = 'throw', // Default to 'throw' for consistency
-    varName = DEFAULT_WINDOW_ENV_VAR_NAME,
     skipValidation = false
   } = config;
 
@@ -77,7 +75,6 @@ export function createDynamicEnv<T extends z.ZodObject<z.ZodRawShape>>(
     rawEnvVars: runtimeEnv, // Pass original values for __raw
     clientKeys,
     serverKeys,
-    varName,
     schema,
     onValidationError
   });

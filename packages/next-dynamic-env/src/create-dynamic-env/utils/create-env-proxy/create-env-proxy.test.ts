@@ -32,8 +32,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBe('https://api.example.com');
@@ -47,8 +46,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBeUndefined();
@@ -62,7 +60,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         schema: z.object({
           API_URL: z.string().url()
         })
@@ -93,8 +90,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBe('https://runtime.com');
@@ -114,31 +110,12 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBe('https://runtime.com');
       expect(proxy.APP_NAME).toBe('Build Time App');
       expect(proxy.MISSING_IN_WINDOW).toBe('only-build-time');
-    });
-
-    it('should use custom variable name', () => {
-      const envVars = {
-        API_URL: 'https://build-time.com'
-      };
-
-      // Set runtime values with custom var name
-      (window as any).MY_CUSTOM_ENV = {
-        API_URL: 'https://custom-runtime.com'
-      };
-
-      const proxy = createEnvProxy({
-        envVars,
-        varName: 'MY_CUSTOM_ENV'
-      });
-
-      expect(proxy.API_URL).toBe('https://custom-runtime.com');
     });
 
     it('should handle non-existent window variable gracefully', () => {
@@ -148,8 +125,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBe('https://build-time.com');
@@ -173,7 +149,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         schema,
         onValidationError: 'warn'
       });
@@ -197,8 +172,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect(proxy.API_URL).toBe('https://runtime.com');
@@ -219,8 +193,7 @@ describe('createEnvProxy', () => {
     it('should return undefined for non-string keys', () => {
       const envVars = { API_URL: 'https://api.example.com' };
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       const symbolKey = Symbol('test');
@@ -230,8 +203,7 @@ describe('createEnvProxy', () => {
     it('should return undefined for non-existent keys', () => {
       const envVars = { API_URL: 'https://api.example.com' };
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect((proxy as any).NON_EXISTENT).toBeUndefined();
@@ -240,8 +212,7 @@ describe('createEnvProxy', () => {
     it('should handle numeric keys as strings', () => {
       const envVars = { '123': 'numeric-key-value' };
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       expect((proxy as any)[123]).toBe('numeric-key-value');
@@ -263,7 +234,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL', 'APP_NAME'],
         serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
@@ -297,7 +267,6 @@ describe('createEnvProxy', () => {
       const proxy = createEnvProxy({
         envVars,
         rawEnvVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL', 'APP_NAME'],
         serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
@@ -327,7 +296,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL', 'APP_NAME'],
         serverKeys: ['SERVER_SECRET']
       });
@@ -351,7 +319,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: [],
         serverKeys: ['API_URL', 'APP_NAME']
       });
@@ -379,7 +346,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL'],
         serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
@@ -410,7 +376,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL'],
         serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
@@ -436,7 +401,6 @@ describe('createEnvProxy', () => {
 
       const proxy = createEnvProxy({
         envVars,
-        varName: '__NEXT_DYNAMIC_ENV__',
         clientKeys: ['API_URL'],
         serverKeys: ['DATABASE_URL', 'SECRET_KEY']
       });
@@ -464,8 +428,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // null is considered a defined value, so it uses the window value
@@ -482,8 +445,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // Should use window value even if it's an empty string
@@ -500,8 +462,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // Should use window value even if it's false
@@ -518,8 +479,7 @@ describe('createEnvProxy', () => {
       };
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // Should use window value even if it's 0
@@ -534,8 +494,7 @@ describe('createEnvProxy', () => {
       (window as any).__NEXT_DYNAMIC_ENV__ = null;
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // Should fallback to build-time value
@@ -550,8 +509,7 @@ describe('createEnvProxy', () => {
       (window as any).__NEXT_DYNAMIC_ENV__ = 'not-an-object';
 
       const proxy = createEnvProxy({
-        envVars,
-        varName: '__NEXT_DYNAMIC_ENV__'
+        envVars
       });
 
       // Should fallback to build-time value

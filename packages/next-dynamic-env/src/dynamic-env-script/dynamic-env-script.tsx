@@ -27,8 +27,7 @@ import type { DynamicEnvScriptProps } from './dynamic-env-script.types';
 export function DynamicEnvScript<T = EnvVars>({
   id = 'next-dynamic-env-script',
   env,
-  onMissingVar,
-  varName = DEFAULT_WINDOW_ENV_VAR_NAME
+  onMissingVar
 }: DynamicEnvScriptProps<T>) {
   // Extract raw values if env is from createDynamicEnv, otherwise use as-is
   const rawEnv = (
@@ -67,7 +66,7 @@ export function DynamicEnvScript<T = EnvVars>({
 
   return (
     <Script id={id} strategy='beforeInteractive'>
-      {`window.${varName} = ${JSON.stringify(cleanEnv)};`}
+      {`window.${DEFAULT_WINDOW_ENV_VAR_NAME} = ${JSON.stringify(cleanEnv)};`}
     </Script>
   );
 }

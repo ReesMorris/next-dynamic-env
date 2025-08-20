@@ -1,3 +1,4 @@
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
 import type { DynamicEnv } from '@/types';
 import { isBrowser } from '@/utils';
 import { validateWindowValue } from '../validate-window-value';
@@ -18,7 +19,7 @@ import type { CreateEnvProxyOptions } from './create-env-proxy.types';
  *
  * @remarks
  * - On the server: Always returns values from `envVars`
- * - On the client: Checks `window[varName]` first, falls back to `envVars`
+ * - On the client: Checks `window` first, falls back to `envVars`
  * - Server-only variables throw an error on the client in development
  * - The special `__raw` property returns only client variables when on the client
  * - Non-string property keys return `undefined`
@@ -27,7 +28,6 @@ import type { CreateEnvProxyOptions } from './create-env-proxy.types';
 export const createEnvProxy = <T extends Record<string, unknown>>({
   envVars,
   rawEnvVars,
-  varName,
   schema,
   onValidationError,
   clientKeys = [],
@@ -74,9 +74,9 @@ export const createEnvProxy = <T extends Record<string, unknown>>({
         return envVars[key];
       }
 
-      // Client-side: prefer window[varName], fallback to envVars (build-time vars)
+      // Client-side: prefer window.__NEXT_DYNAMIC_ENV__, fallback to envVars (build-time vars)
       const windowEnv = (window as unknown as Record<string, unknown>)[
-        varName
+        DEFAULT_WINDOW_ENV_VAR_NAME
       ] as Record<string, unknown> | undefined;
 
       if (windowEnv && windowEnv[key] !== undefined) {

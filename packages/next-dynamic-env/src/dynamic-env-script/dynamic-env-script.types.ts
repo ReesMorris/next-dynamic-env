@@ -18,10 +18,4 @@ export interface DynamicEnvScriptProps<T = EnvVars> {
    * @param key - The name of the missing variable
    */
   onMissingVar?: (key: string) => void;
-
-  /**
-   * Optional custom variable name for the global object
-   * @default '__NEXT_DYNAMIC_ENV__'
-   */
-  varName?: string;
 }

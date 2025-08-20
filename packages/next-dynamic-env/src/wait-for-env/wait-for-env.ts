@@ -36,7 +36,6 @@ import { WaitForEnvError } from './wait-for-env-error';
 export const waitForEnv = <T = Record<string, unknown>>({
   timeout = 5000,
   interval = 50,
-  varName = DEFAULT_WINDOW_ENV_VAR_NAME,
   retries = 0,
   backoffMultiplier = 2,
   requiredKeys = [],
@@ -55,7 +54,7 @@ export const waitForEnv = <T = Record<string, unknown>>({
   }
 
   // Make sure parameters are valid
-  validateParams(timeout, interval, varName);
+  validateParams(timeout, interval);
 
   const log = (message: string) => {
     if (debug) {
@@ -84,10 +83,14 @@ export const waitForEnv = <T = Record<string, unknown>>({
 
       const checkEnv = () => {
         pollCount++;
-        log(`Polling attempt ${pollCount} for window.${varName}`);
+        log(
+          `Polling attempt ${pollCount} for window.${DEFAULT_WINDOW_ENV_VAR_NAME}`
+        );
 
         // biome-ignore lint/suspicious/noExplicitAny: The variable may or may not exist
-        const env = (window as any)[varName] as T | undefined;
+        const env = (window as any)[DEFAULT_WINDOW_ENV_VAR_NAME] as
+          | T
+          | undefined;
 
         if (env) {
           // Check for required keys
@@ -144,9 +147,8 @@ export const waitForEnv = <T = Record<string, unknown>>({
           onTimeout?.();
 
           const error = new WaitForEnvError(
-            `Environment variables (window.${varName}) not available after ${timeout}ms`,
+            `Environment variables (window.${DEFAULT_WINDOW_ENV_VAR_NAME}) not available after ${timeout}ms`,
             'TIMEOUT',
-            varName,
             {
               timeout: attemptTimeout,
               attempts: attemptNumber + 1,

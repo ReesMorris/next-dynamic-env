@@ -30,12 +30,6 @@ export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
   onValidationError?: 'throw' | 'warn' | ((errors: z.ZodError) => void);
 
   /**
-   * Custom variable name for the global object
-   * @default '__NEXT_DYNAMIC_ENV__'
-   */
-  varName?: string;
-
-  /**
    * Whether to skip validation (useful for build time)
    * @default false
    */

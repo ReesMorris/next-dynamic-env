@@ -12,12 +12,6 @@ export interface WaitForEnvOptions<T = Record<string, unknown>> {
   interval?: number;
 
   /**
-   * Custom variable name for the global object
-   * @default '__NEXT_DYNAMIC_ENV__'
-   */
-  varName?: string;
-
-  /**
    * Number of retry attempts before giving up
    * @default 0
    */

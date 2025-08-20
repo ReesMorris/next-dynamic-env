@@ -71,17 +71,6 @@ describe('DynamicEnvScript', () => {
       });
     });
 
-    it('should use custom variable name when provided', () => {
-      const env = { API_URL: 'https://api.example.com' };
-
-      render(<DynamicEnvScript env={env} varName='CUSTOM_ENV' />);
-
-      expect((window as any).CUSTOM_ENV).toEqual({
-        API_URL: 'https://api.example.com'
-      });
-      expect((window as any).__NEXT_DYNAMIC_ENV__).toBeUndefined();
-    });
-
     it('should filter out undefined values', () => {
       const env = {
         API_URL: 'https://api.example.com',

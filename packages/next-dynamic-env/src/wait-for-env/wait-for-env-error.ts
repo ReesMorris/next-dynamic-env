@@ -11,7 +11,6 @@ export type WaitForEnvErrorCode =
  */
 export class WaitForEnvError extends Error {
   public readonly code: WaitForEnvErrorCode;
-  public readonly varName: string;
   public readonly timeout?: number;
   public readonly attempts?: number;
   public readonly missingKeys?: string[];
@@ -20,7 +19,6 @@ export class WaitForEnvError extends Error {
   constructor(
     message: string,
     code: WaitForEnvErrorCode,
-    varName: string,
     details?: {
       timeout?: number;
       attempts?: number;
@@ -31,7 +29,6 @@ export class WaitForEnvError extends Error {
     super(message);
     this.name = 'WaitForEnvError';
     this.code = code;
-    this.varName = varName;
     this.timeout = details?.timeout;
     this.attempts = details?.attempts;
     this.missingKeys = details?.missingKeys;
@@ -47,7 +44,7 @@ export class WaitForEnvError extends Error {
    * Helper method to get debugging information
    */
   getDebugInfo(): string {
-    const info = [`Error Code: ${this.code}`, `Variable Name: ${this.varName}`];
+    const info = [`Error Code: ${this.code}`];
 
     if (this.timeout) {
       info.push(`Timeout: ${this.timeout}ms`);
