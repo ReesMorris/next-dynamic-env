@@ -1,4 +1,5 @@
 {
+  "name": "next-dynamic-env-monorepo",
   "private": true,
   "scripts": {
     "build": "turbo build",
