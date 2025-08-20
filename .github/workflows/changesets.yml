@@ -13,10 +13,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      packages: write
       id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -36,6 +39,14 @@ jobs:
       - name: Build package
         run: pnpm build:packages
 
+      - name: Create .npmrc
+        run: |
+          cat << EOF > "$HOME/.npmrc"
+          //registry.npmjs.org/:_authToken=$NPM_TOKEN
+          EOF
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
@@ -43,9 +54,11 @@ jobs:
           publish: pnpm changeset publish
           title: "chore: release package"
           commit: "chore: release package"
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Summary
         if: steps.changesets.outputs.published == 'true'
@@ -57,3 +70,6 @@ jobs:
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo '${{ steps.changesets.outputs.publishedPackages }}' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### GitHub Releases" >> $GITHUB_STEP_SUMMARY
+          echo "GitHub releases have been created automatically for the published versions." >> $GITHUB_STEP_SUMMARY
