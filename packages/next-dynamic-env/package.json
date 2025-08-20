@@ -1,6 +1,6 @@
 {
   "name": "next-dynamic-env",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Runtime environment variables for dockerized Next.js apps",
   "author": "Rees Morris",
   "license": "MIT",
