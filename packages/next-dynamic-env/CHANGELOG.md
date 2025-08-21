@@ -1,5 +1,13 @@
 # next-dynamic-env
 
+## 1.0.1
+
+### Patch Changes
+
+- [`8a346b2`](https://github.com/ReesMorris/next-dynamic-env/commit/8a346b2aa757abcd35fa4fae3761912f1b897f75) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Move @standard-schema/spec to devDependencies since it's only used for TypeScript types
+
+- [`c9a7671`](https://github.com/ReesMorris/next-dynamic-env/commit/c9a76711d988c2ca75e49f361ac6face4963dcef) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Update GitHub Actions workflow to enable npm provenance
+
 ## 1.0.0
 
 ### Major Changes
