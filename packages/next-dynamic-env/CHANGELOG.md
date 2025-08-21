@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 1.0.2
+
+### Patch Changes
+
+- [`b15ad02`](https://github.com/ReesMorris/next-dynamic-env/commit/b15ad02378cdb7755b1317c305ab57996b4989c1) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Add publishConfig to enable npm provenance with OIDC
+
 ## 1.0.1
 
 ### Patch Changes
