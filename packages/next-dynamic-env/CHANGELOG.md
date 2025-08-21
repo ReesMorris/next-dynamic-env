@@ -1,5 +1,18 @@
 # next-dynamic-env
 
+## 1.1.0
+
+### Minor Changes
+
+- [#16](https://github.com/ReesMorris/next-dynamic-env/pull/16) [`0f042b0`](https://github.com/ReesMorris/next-dynamic-env/commit/0f042b06a119c0769542bcefc25c64dc3a3b930f) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Improved validation error formatting with colors and better readability
+
+  - Added ANSI color support for terminal output (respects NO_COLOR/FORCE_COLOR env vars)
+  - Validation errors now display with emoji indicators and colored formatting
+  - Simplified error messages by removing verbose JSON arrays and stack traces
+  - Changed throw mode behavior to console.error + process.exit instead of throwing
+  - Better separation of concerns with modular formatting utilities
+  - Improved browser compatibility by detecting environment and adjusting output
+
 ## 1.0.2
 
 ### Patch Changes
