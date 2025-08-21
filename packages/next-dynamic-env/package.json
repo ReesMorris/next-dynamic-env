@@ -13,9 +13,9 @@
     "runtime",
     "variables"
   ],
-  "repository": "https://github.com/reesmorris/next-dynamic-env",
-  "homepage": "https://github.com/reesmorris/next-dynamic-env#readme",
-  "bugs": "https://github.com/reesmorris/next-dynamic-env/issues",
+  "repository": "https://github.com/ReesMorris/next-dynamic-env",
+  "homepage": "https://github.com/ReesMorris/next-dynamic-env#readme",
+  "bugs": "https://github.com/ReesMorris/next-dynamic-env/issues",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
