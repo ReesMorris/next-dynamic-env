@@ -42,7 +42,7 @@ export const validateWithSchema = (
   }
 
   if ('issues' in result && result.issues && result.issues.length > 0) {
-    throw formatValidationIssues(result.issues);
+    throw new Error(formatValidationIssues(result.issues));
   }
 
   if ('value' in result) {

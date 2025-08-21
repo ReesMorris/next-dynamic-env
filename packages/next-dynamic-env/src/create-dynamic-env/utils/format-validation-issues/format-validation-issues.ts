@@ -27,9 +27,7 @@ export const formatValidationIssues = (
   }
 
   // Get the messages from the issues
-  const messages = issues.map<StandardSchemaV1.Issue['message']>(issue => {
-    return issue.message;
-  });
+  const messages = issues.map(issue => issue.message);
 
   // If there's only one issue, return it directly
   if (messages.length === 1) {

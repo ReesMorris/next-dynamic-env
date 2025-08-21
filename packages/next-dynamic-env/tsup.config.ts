@@ -1,5 +1,3 @@
-import path from 'node:path';
-import { aliasPath } from 'esbuild-plugin-alias-path';
 import { defineConfig } from 'tsup';
 
 export default defineConfig(options => ({
@@ -45,14 +43,6 @@ export default defineConfig(options => ({
 
   // Better source maps for debugging
   sourcemap: options.watch ? 'inline' : true,
-
-  esbuildPlugins: [
-    aliasPath({
-      alias: {
-        '@': path.resolve(__dirname, './src')
-      }
-    })
-  ],
 
   esbuildOptions(options) {
     options.treeShaking = true;
