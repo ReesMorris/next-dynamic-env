@@ -478,6 +478,10 @@ const dbUrl = serverEnv.DATABASE_URL;
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Acknowledgments
+
+This library was inspired by [t3-env](https://github.com/t3-oss/t3-env), which pioneered the concept of type-safe environment variables with server/client separation in Next.js applications. We've built upon their excellent foundation to add runtime configuration capabilities for containerized deployments.
+
 ## License
 
 MIT
