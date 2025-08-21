@@ -33,7 +33,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "check": "bun run lint && bun run typecheck",
+    "check": "pnpm run lint && pnpm run typecheck",
     "dev": "tsup --watch",
     "format": "biome format --write .",
     "lint": "biome check --fix .",

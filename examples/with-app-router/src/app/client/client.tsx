@@ -3,14 +3,6 @@
 import { clientEnv } from '@/env';
 
 export const Client = () => {
-  // Log to verify FEATURES is an array in the browser
-  console.log('Client Component - FEATURES:', clientEnv.FEATURES);
-  console.log('Client Component - FEATURES type:', typeof clientEnv.FEATURES);
-  console.log(
-    'Client Component - Is Array?',
-    Array.isArray(clientEnv.FEATURES)
-  );
-
   return (
     <div className='container'>
       <span className='client-indicator client'>Client Component</span>

@@ -5,7 +5,7 @@ import type {
   ProcessedEnv,
   ValidationError
 } from '@/types';
-import { isBrowser } from '@/utils';
+import { isBrowser, isBuildPhase } from '@/utils';
 import type { CreateDynamicEnvConfig } from './create-dynamic-env.types';
 import {
   createClientEnvProxy,
@@ -64,12 +64,16 @@ export const createDynamicEnv = <
   let rawServerEnv: ProcessedEnv = {};
   const allErrors: ValidationError[] = [];
 
+  // Skip validation during Next.js build phase
+  // Environment variables won't be available when building Docker images
+  const shouldSkipValidation = skipValidation || isBuildPhase();
+
   // Only process on server - in browser, values come from window
   if (!isBrowser()) {
     // Process server variables
     const serverResult = processEnvironmentVariables(
       server,
-      skipValidation,
+      shouldSkipValidation,
       emptyStringAsUndefined
     );
     processedServerEnv = serverResult.processedEnv;
@@ -79,7 +83,7 @@ export const createDynamicEnv = <
     // Process client variables
     const clientResult = processEnvironmentVariables(
       client,
-      skipValidation,
+      shouldSkipValidation,
       emptyStringAsUndefined
     );
     processedClientEnv = clientResult.processedEnv;
@@ -88,7 +92,7 @@ export const createDynamicEnv = <
   }
 
   // Handle validation errors
-  handleValidationErrors(allErrors, onValidationError, skipValidation);
+  handleValidationErrors(allErrors, onValidationError, shouldSkipValidation);
 
   // Create separate proxies for client and server
   const clientEnv = createClientEnvProxy(
