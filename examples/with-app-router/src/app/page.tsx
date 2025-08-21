@@ -1,6 +1,9 @@
 import { Client } from './client';
 import { Server } from './server';
 
+// Force dynamic rendering to ensure runtime environment variables are loaded
+export const dynamic = 'force-dynamic';
+
 const HomePage = () => {
   return (
     <main>

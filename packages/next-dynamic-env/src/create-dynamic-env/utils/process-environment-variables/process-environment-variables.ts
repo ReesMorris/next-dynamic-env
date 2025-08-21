@@ -28,14 +28,12 @@ export const processEnvironmentVariables = (
       // Store raw value
       rawEnv[key] = Array.isArray(entry) ? entry[0] : entry;
 
-      if (skipValidation) {
-        // Skip validation, just extract the value
-        const value = Array.isArray(entry) ? entry[0] : entry;
-        processedEnv[key] =
-          emptyStringAsUndefined && value === '' ? undefined : value;
-      } else {
-        processedEnv[key] = processEnvEntry(key, entry, emptyStringAsUndefined);
-      }
+      processedEnv[key] = processEnvEntry(
+        key,
+        entry,
+        emptyStringAsUndefined,
+        skipValidation
+      );
     } catch (error) {
       errors.push({ key, error });
     }

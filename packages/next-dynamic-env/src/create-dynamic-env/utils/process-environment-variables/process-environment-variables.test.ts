@@ -4,15 +4,21 @@ import { processEnvironmentVariables } from './process-environment-variables';
 
 // Mock processEnvEntry
 vi.mock('../process-env-entry', () => ({
-  processEnvEntry: vi.fn((_key, entry, emptyStringAsUndefined) => {
-    // Simple mock implementation
-    const value = Array.isArray(entry) ? entry[0] : entry;
-    if (emptyStringAsUndefined && value === '') {
-      return undefined;
+  processEnvEntry: vi.fn(
+    (_key, entry, emptyStringAsUndefined, skipValidation) => {
+      // Simple mock implementation
+      const value = Array.isArray(entry) ? entry[0] : entry;
+      if (emptyStringAsUndefined && value === '') {
+        return undefined;
+      }
+      // If skipValidation is true, return raw value
+      if (skipValidation) {
+        return value;
+      }
+      // Otherwise, simulate validation success
+      return `validated-${value}`;
     }
-    // Simulate validation success
-    return `validated-${value}`;
-  })
+  )
 }));
 
 describe('processEnvironmentVariables', () => {

@@ -16,6 +16,8 @@ Traditional Next.js apps bake environment variables into the build. This means y
 - 🚀 CI/CD pipelines that promote the same build through stages
 - 🔧 Feature flags and config that change without code changes
 
+**Key benefit:** Build your Docker image once without environment variables, then inject them at runtime in each environment!
+
 ## Features
 
 - **Runtime Configuration** - Change environment variables without rebuilding
@@ -195,6 +197,35 @@ docker run -e API_URL=https://staging.api myapp:latest
 docker run -e API_URL=https://prod.api myapp:latest
 ```
 
+### Build Phase Behavior
+
+During `next build`, validation is automatically skipped to support Docker workflows where environment variables are injected at runtime rather than build time. This means:
+
+- ✅ Your Docker image builds successfully without environment variables
+- ✅ Validation still runs at runtime when the container starts
+- ✅ Schema transformations (defaults, type coercion) are still applied during build
+
+This enables true "build once, deploy anywhere" workflows:
+
+```dockerfile
+# Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+RUN npm ci
+# No ENV vars needed during build!
+RUN npm run build
+
+# Runtime - inject environment variables
+CMD ["npm", "start"]
+```
+
+```bash
+# Deploy the same image to different environments
+docker run -e DATABASE_URL=$STAGING_DB myapp:latest  # Staging
+docker run -e DATABASE_URL=$PROD_DB myapp:latest     # Production
+```
+
 ## Examples
 
 - [App Router Example](./examples/with-app-router)
@@ -210,6 +241,7 @@ Creates your environment configuration.
 - **`server`**: Server-only variables (never sent to browser)
 - **`onValidationError`**: `'throw'` | `'warn'` | `(error) => void`
 - **`emptyStringAsUndefined`**: Convert `""` to `undefined` (default: `true`)
+- **`skipValidation`**: Skip validation (default: `false`, automatically `true` during build)
 
 ### `DynamicEnvScript`
 

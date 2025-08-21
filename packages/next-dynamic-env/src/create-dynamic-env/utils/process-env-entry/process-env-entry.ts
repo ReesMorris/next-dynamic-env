@@ -1,4 +1,5 @@
 import type { EnvEntry } from '@/types';
+import { applyTransformWithoutValidation } from '../apply-transform-without-validation';
 import { validateWithSchema } from '../validate-with-schema';
 
 /**
@@ -15,19 +16,21 @@ import { validateWithSchema } from '../validate-with-schema';
  * - A tuple `[value]` for raw value without validation
  * - A tuple `[value, schema]` for validated value
  * @param emptyStringAsUndefined - If true, converts empty strings to undefined
+ * @param skipValidation - If true, applies transforms without throwing validation errors
  *
  * @returns The processed value, which may be:
  * - The original raw value (if no schema provided)
  * - `undefined` (if empty string and `emptyStringAsUndefined` is true)
  * - The validated and potentially transformed value (if schema provided)
  *
- * @throws If validation fails when a schema is provided. The error message
- * includes the key name and the underlying validation error details.
+ * @throws If validation fails when a schema is provided and skipValidation is false.
+ * The error message includes the key name and the underlying validation error details.
  */
 export const processEnvEntry = (
   key: string,
   entry: EnvEntry,
-  emptyStringAsUndefined: boolean
+  emptyStringAsUndefined: boolean,
+  skipValidation = false
 ): unknown => {
   // Handle raw values (not arrays)
   if (!Array.isArray(entry)) {
@@ -48,6 +51,11 @@ export const processEnvEntry = (
   // No schema provided, return raw value
   if (!schema) {
     return value;
+  }
+
+  // If skipping validation, apply transforms without throwing errors
+  if (skipValidation) {
+    return applyTransformWithoutValidation(value, schema);
   }
 
   // Validate with standard schema
