@@ -1,5 +1,18 @@
 # next-dynamic-env
 
+## 1.2.0
+
+### Minor Changes
+
+- [#19](https://github.com/ReesMorris/next-dynamic-env/pull/19) [`70251b4`](https://github.com/ReesMorris/next-dynamic-env/commit/70251b4257a5bea560c3c4f5e8b037e11675eafe) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Add automatic build phase detection for Docker deployments
+
+  - Skip validation during `next build` to support Docker workflows where environment variables are injected at runtime
+  - Apply schema transformations (defaults, coercion) even when validation is skipped
+  - Add `isBuildPhase()` utility to detect Next.js build phase
+  - Examples now use `force-dynamic` to ensure runtime environment variables work correctly
+
+  This enables true "build once, deploy anywhere" workflows - build your Docker image without environment variables, then inject them at runtime in each environment.
+
 ## 1.1.0
 
 ### Minor Changes
