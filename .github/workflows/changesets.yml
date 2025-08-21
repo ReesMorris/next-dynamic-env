@@ -40,6 +40,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Update npm for Trusted Publishing
+        run: npm install -g npm@latest
+
+      - name: Check npm version
+        run: npm --version
+
       - name: Build package
         run: pnpm build:packages
 
@@ -47,7 +53,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: npm exec changeset publish
+          publish: pnpm changeset publish
           title: "chore: release package"
           commit: "chore: release package"
           createGithubReleases: true
