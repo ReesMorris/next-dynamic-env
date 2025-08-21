@@ -15,7 +15,7 @@ This library enforces a strict separation between server and client environment 
 - 🚀 **Runtime Configuration** - Change environment variables without rebuilding
 - 🔐 **Server/Client Separation** - Keep secrets safe with explicit separation
 - 🔒 **Type Safety** - Full TypeScript support with autocompletion
-- ✅ **Validation** - Required Zod schema validation for runtime safety
+- ✅ **Validator Agnostic** - Use Zod, Yup, Valibot, or any [standard-schema](https://github.com/standard-schema/standard-schema) compatible validator
 - 🎯 **Universal** - Works with App Router, Pages Router, instrumentation, and middleware
 - 🐳 **Docker Ready** - Perfect for containerized deployments
 - ⏳ **Async Loading** - Wait for env vars in files that run before the script (e.g., instrumentation files)
@@ -36,53 +36,51 @@ bun add next-dynamic-env
 
 ### 1. Create your configuration
 
-Call `createDynamicEnv` to define your environment variables:
+Call `createDynamicEnv` to define your environment variables. You can use any validator that supports [standard-schema](https://github.com/standard-schema/standard-schema) (Zod, Yup, Valibot, etc.) or no validation at all:
 
 ```typescript
 // dynamic-env.ts
 import { createDynamicEnv } from 'next-dynamic-env';
-import { z } from 'zod';
+import { z } from 'zod';  // or import * as yup from 'yup', or any standard-schema validator
 
-export const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Client variables (exposed to browser)
-    APP_NAME: z.string().min(1, 'APP_NAME is required'),
-    API_URL: z.string().url('API_URL must be a valid URL'),
-    DEBUG: z.coerce.boolean().default(false),
-    
-    // Server variables (never exposed to browser)
-    DATABASE_URL: z.string().url(),
-    API_SECRET: z.string().min(32),
-  }),
+export const { clientEnv, serverEnv } = createDynamicEnv({
   client: {
-    APP_NAME: process.env.APP_NAME,
-    API_URL: process.env.API_URL,
-    DEBUG: process.env.DEBUG,
+    // With validation (type-safe)
+    APP_NAME: [process.env.APP_NAME, z.string().min(1)],
+    API_URL: [process.env.API_URL, z.string().url()],
+    DEBUG: [process.env.DEBUG, z.coerce.boolean().default(false)],
+    
+    // Without validation (raw string | undefined)
+    ANALYTICS_ID: process.env.ANALYTICS_ID,
   },
   server: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    API_SECRET: process.env.API_SECRET,
+    // Server variables (never exposed to browser)
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    API_SECRET: [process.env.API_SECRET, z.string().min(32)],
+    
+    // Raw value without validation
+    LOG_LEVEL: process.env.LOG_LEVEL,
   }
 });
 ```
 
 ### 2. Add to your layout
 
-Add the `DynamicEnvScript` to your root component.
+Add the `DynamicEnvScript` to your root component. We only need to expose the `clientEnv` to the browser.
 
 #### App Router
 
 ```tsx
 // app/layout.tsx
 import { DynamicEnvScript } from 'next-dynamic-env';
-import { dynamicEnv } from '../dynamic-env';
+import { clientEnv } from '../dynamic-env';
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
         {children}
-        <DynamicEnvScript env={dynamicEnv} />
+        <DynamicEnvScript clientEnv={clientEnv} />
       </body>
     </html>
   );
@@ -94,12 +92,12 @@ export default function RootLayout({ children }) {
 ```tsx
 // pages/_app.tsx
 import { DynamicEnvScript } from 'next-dynamic-env';
-import { dynamicEnv } from '../dynamic-env';
+import { clientEnv } from '../dynamic-env';
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <DynamicEnvScript env={dynamicEnv} />
+      <DynamicEnvScript clientEnv={clientEnv} />
       <Component {...pageProps} />
     </>
   );
@@ -111,15 +109,15 @@ export default MyApp;
 ### 3. Use anywhere in your app
 
 ```tsx
-// Any component (Server or Client)
-import { dynamicEnv } from '../dynamic-env';
+// On server components, you can use both client and server env
+import { clientEnv, serverEnv } from '../dynamic-env';
 
 export function MyComponent() {
   return (
     <div>
-      <h1>Welcome to {dynamicEnv.APP_NAME}</h1>
-      <p>API: {dynamicEnv.API_URL}</p>
-      {dynamicEnv.DEBUG && <DebugPanel />}
+      <h1>Welcome to {clientEnv.APP_NAME}</h1>
+      <p>API: {serverEnv.API_URL}</p>
+      {clientEnv.DEBUG && <DebugPanel />}
     </div>
   );
 }
@@ -132,15 +130,15 @@ For code that runs only on the server (such as `instrumentation-client.ts`), use
 ```typescript
 // instrumentation-client.ts
 import { waitForEnv } from 'next-dynamic-env';
-import { dynamicEnv } from '../dynamic-env';
+import { clientEnv } from '../dynamic-env';
 
 (async () => {
   await waitForEnv();
 
   // Initialize monitoring, analytics, etc.
   Sentry.init({
-    dsn: dynamicEnv.SENTRY_DSN,
-    tracesSampleRate: dynamicEnv.TRACES_SAMPLE_RATE,
+    dsn: clientEnv.SENTRY_DSN,
+    tracesSampleRate: clientEnv.TRACES_SAMPLE_RATE,
   });
 })();
 ```
@@ -152,33 +150,38 @@ import { dynamicEnv } from '../dynamic-env';
 Creates a type-safe environment configuration with server/client separation.
 
 #### Config Options
+| Option | Required | Default | Description |
+| ------ | -------- | ------- | ----------- |
+| `client` | No | `{}` | Client-side environment variables (exposed to browser) |
+| `server` | No | `{}` | Server-only environment variables (never exposed to browser) |
+| `onValidationError` | No | `'throw'` | Error handling: `'throw'`, `'warn'`, or custom function |
+| `skipValidation` | No | `false` | Skip validation (useful for build time) |
+| `emptyStringAsUndefined` | No | `true` | Convert empty strings to undefined |
 
-| Option | Required | Description |
-| ------ | -------- | ----------- |
-| `schema` | Yes | Zod schema defining all environment variables |
-| `client` | Yes | Object with client-side environment variables |
-| `server` | Yes | Object with server-only environment variables |
-| `onValidationError` | No | Error handling: `'throw'` (default), `'warn'`, or custom function |
-| `skipValidation` | No | Skip validation (useful for build time) |
+#### Entry Format
+
+Each environment variable can be defined in three ways:
 
 ```typescript
-const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Define all variables in one schema
-    API_URL: z.string().url(),
-    PORT: z.coerce.number(),
-    DATABASE_URL: z.string(),
-  }),
+const { clientEnv, serverEnv } = createDynamicEnv({
   client: {
-    // Only these are exposed to browser
-    API_URL: process.env.API_URL,
-    PORT: process.env.PORT,
+    // 1. With validation - [value, schema]
+    API_URL: [process.env.API_URL, z.string().url()],
+    
+    // 2. Without validation - raw value
+    APP_NAME: process.env.APP_NAME,
+    
+    // 3. With transformation
+    FEATURES: [
+      process.env.FEATURES,
+      z.string().transform(val => val.split(','))
+    ],
   },
   server: {
-    // These are never exposed to browser
-    DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    SECRET: process.env.SECRET,  // No validation
   },
-  onValidationError: 'warn', // or 'throw' or custom function
+  onValidationError: 'warn',
 });
 ```
 
@@ -194,12 +197,11 @@ const dynamicEnv = createDynamicEnv({
 React component that injects environment variables into the client.
 
 #### Props
-
-| Prop | Required | Description |
-| ---- | -------- | ----------- |
-| `env` | Yes | The dynamic env object from `createDynamicEnv` |
-| `onMissingVar` | No | Handler for missing required variables (dev only) |
-| `id` | No | Script element ID (default: `next-dynamic-env-script`) |
+| Prop | Required | Default | Description |
+| ---- | -------- | ------- | ----------- |
+| `env` | Yes | - | The dynamic env object from `createDynamicEnv` |
+| `onMissingVar` | No | - | Handler for missing required variables (dev only) |
+| `id` | No | `next-dynamic-env-script` | Script element ID |
 
 ### `waitForEnv(options?)`
 
@@ -227,14 +229,14 @@ await waitForEnv({
 
 #### Options
 
-| Option | Description |
-| ------ | ----------- |
-| `timeout` | Maximum wait time in ms (default: 5000) |
-| `interval` | Polling interval in ms (default: 50) |
-| `requiredKeys` | Array of required environment variable keys |
-| `validate` | Custom validation function |
-| `retries` | Number of retry attempts (default: 0) |
-| `debug` | Enable debug logging |
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `timeout` | 5000 | Maximum wait time in ms |
+| `interval` | 50 | Polling interval in ms |
+| `requiredKeys` | - | Array of required environment variable keys |
+| `validate` | - | Custom validation function |
+| `retries` | 0 | Number of retry attempts |
+| `debug` | - | Enable debug logging |
 
 ## Examples
 
@@ -243,30 +245,102 @@ Check out the [examples](./examples) directory:
 - [App Router](./examples/with-app-router) - Next.js 15 with App Router
 - [Pages Router](./examples/with-pages-router) - Next.js with Pages Router
 
-## Validation with Zod
+## Using Different Validators
 
-The schema validates all environment variables at runtime:
+`next-dynamic-env` works with any validator that supports the [standard-schema](https://github.com/standard-schema/standard-schema) specification, including Zod, Yup, Valibot, and more.
+
+### With Zod
 
 ```typescript
-const dynamicEnv = createDynamicEnv({
-  schema: z.object({
-    // Client variables with validation
-    API_URL: z.string().url('Invalid API URL'),
-    TIMEOUT: z.coerce.number().min(1000).max(30000),
-    FEATURES: z.string().transform(val => val.split(',')),
-    
-    // Server variables with validation
-    DATABASE_URL: z.string().url(),
-    RETRY_COUNT: z.coerce.number().int().positive()
-  }),
+import { z } from 'zod';
+
+export const { clientEnv, serverEnv } = createDynamicEnv({
   client: {
-    API_URL: process.env.API_URL,
-    TIMEOUT: process.env.TIMEOUT,
-    FEATURES: process.env.FEATURES,
+    API_URL: [process.env.API_URL, z.string().url()],
+    PORT: [process.env.PORT, z.coerce.number().default(3000)],
+  }
+});
+```
+
+### With Yup
+
+```typescript
+import * as yup from 'yup';
+
+export const { clientEnv, serverEnv } = createDynamicEnv({
+  client: {
+    API_URL: [process.env.API_URL, yup.string().url().required()],
+    PORT: [process.env.PORT, yup.number().positive().default(3000)],
+  }
+});
+```
+
+### Mixed Validators
+
+You can even mix different validators in the same configuration:
+
+```typescript
+import { z } from 'zod';
+import * as yup from 'yup';
+
+export const { clientEnv, serverEnv } = createDynamicEnv({
+  client: {
+    // Zod for URL validation
+    API_URL: [process.env.API_URL, z.string().url()],
+    
+    // Yup for number validation
+    TIMEOUT: [process.env.TIMEOUT, yup.number().min(1000).max(30000)],
+    
+    // No validation
+    APP_NAME: process.env.APP_NAME,
+  }
+});
+```
+
+## Empty String Handling
+
+By default, `next-dynamic-env` converts empty strings to `undefined` before validation. This prevents common issues with optional fields:
+
+```typescript
+// Environment: SENTRY_URL=""
+createDynamicEnv({
+  client: {
+    // Would fail with empty string without conversion
+    SENTRY_URL: [process.env.SENTRY_URL, z.string().url().optional()],
+  },
+  // emptyStringAsUndefined: true (default)
+});
+
+// Result: clientEnv.SENTRY_URL === undefined ✅
+```
+
+You can disable this behavior if needed:
+
+```typescript
+createDynamicEnv({
+  client: {
+    SENTRY_URL: [process.env.SENTRY_URL, z.string().optional()],
+  },
+  emptyStringAsUndefined: false, // Keep empty strings as-is
+});
+```
+
+## Validation
+
+Validation happens at runtime when environment variables are accessed:
+
+```typescript
+const { clientEnv, serverEnv } = createDynamicEnv({
+  client: {
+    // Client variables with validation
+    API_URL: [process.env.API_URL, z.string().url('Invalid API URL')],
+    TIMEOUT: [process.env.TIMEOUT, z.coerce.number().min(1000).max(30000)],
+    FEATURES: [process.env.FEATURES, z.string().transform(val => val.split(','))],
   },
   server: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    RETRY_COUNT: process.env.RETRY_COUNT,
+    // Server variables with validation
+    DATABASE_URL: [process.env.DATABASE_URL, z.string().url()],
+    RETRY_COUNT: [process.env.RETRY_COUNT, z.coerce.number().int().positive()],
   },
   onValidationError: (error) => {
     console.error('Configuration error:', error);
@@ -280,31 +354,23 @@ const dynamicEnv = createDynamicEnv({
 ### Transform Values
 
 ```typescript
-const dynamicEnv = createDynamicEnv({
-  schema: z.object({
+const { clientEnv, serverEnv } = createDynamicEnv({
+  client: {
     // Transform comma-separated string to array
-    FEATURES: z.string().transform(val => val.split(',')),
+    FEATURES: [process.env.FEATURES, z.string().transform(val => val.split(','))],
     
     // Parse JSON configuration
-    CONFIG: z.string().transform(val => JSON.parse(val)),
+    CONFIG: [process.env.CONFIG, z.string().transform(val => JSON.parse(val))],
     
     // Convert to boolean
-    MAINTENANCE_MODE: z.coerce.boolean(),
+    MAINTENANCE_MODE: [process.env.MAINTENANCE_MODE, z.coerce.boolean()],
     
     // Default values
-    TIMEOUT: z.coerce.number().default(5000),
-    
-    // Server-only with transform
-    DB_POOL_SIZE: z.coerce.number().default(10),
-  }),
-  client: {
-    FEATURES: process.env.FEATURES,
-    CONFIG: process.env.CONFIG,
-    MAINTENANCE_MODE: process.env.MAINTENANCE_MODE,
-    TIMEOUT: process.env.TIMEOUT,
+    TIMEOUT: [process.env.TIMEOUT, z.coerce.number().default(5000)],
   },
   server: {
-    DB_POOL_SIZE: process.env.DB_POOL_SIZE,
+    // Server-only with transform
+    DB_POOL_SIZE: [process.env.DB_POOL_SIZE, z.coerce.number().default(10)],
   }
 });
 ```
@@ -357,7 +423,7 @@ client: {
 Always validate configuration in production:
 
 ```typescript
-const dynamicEnv = createDynamicEnv({
+const { clientEnv, serverEnv } = createDynamicEnv({
   schema: z.object({
     API_URL: z.string().url(),
     DATABASE_URL: z.string().url(),
@@ -403,8 +469,9 @@ docker run -p 3000:3000 --env-file .env.production myapp
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // After: Using next-dynamic-env
-import { dynamicEnv } from './dynamic-env';
-const apiUrl = dynamicEnv.API_URL;
+import { clientEnv, serverEnv } from './dynamic-env';
+const apiUrl = clientEnv.API_URL;
+const dbUrl = serverEnv.DATABASE_URL;
 ```
 
 ## Contributing

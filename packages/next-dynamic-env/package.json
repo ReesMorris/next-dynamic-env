@@ -44,6 +44,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0"
+  },
   "peerDependencies": {
     "next": ">=14.0.0",
     "react": ">=18.0.0",

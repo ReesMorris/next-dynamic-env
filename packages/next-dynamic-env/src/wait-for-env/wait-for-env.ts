@@ -1,3 +1,4 @@
+import type { ProcessedEnv } from '@/types';
 import { DEFAULT_WINDOW_ENV_VAR_NAME } from '../constants';
 import { isBrowser } from '../utils';
 import { validateParams } from './utils';
@@ -33,7 +34,7 @@ import { WaitForEnvError } from './wait-for-env-error';
  * });
  * ```
  */
-export const waitForEnv = <T = Record<string, unknown>>({
+export const waitForEnv = <T = ProcessedEnv>({
   timeout = 5000,
   interval = 50,
   retries = 0,
@@ -87,10 +88,7 @@ export const waitForEnv = <T = Record<string, unknown>>({
           `Polling attempt ${pollCount} for window.${DEFAULT_WINDOW_ENV_VAR_NAME}`
         );
 
-        // biome-ignore lint/suspicious/noExplicitAny: The variable may or may not exist
-        const env = (window as any)[DEFAULT_WINDOW_ENV_VAR_NAME] as
-          | T
-          | undefined;
+        const env = window[DEFAULT_WINDOW_ENV_VAR_NAME] as T | undefined;
 
         if (env) {
           // Check for required keys

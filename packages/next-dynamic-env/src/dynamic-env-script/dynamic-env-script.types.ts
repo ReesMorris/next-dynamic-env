@@ -1,6 +1,6 @@
-import type { DynamicEnv, EnvVars } from '../types';
+import type { ClientEnv, ProcessedEnv } from '../types';
 
-export interface DynamicEnvScriptProps<T = EnvVars> {
+export interface DynamicEnvScriptProps<T extends ProcessedEnv = ProcessedEnv> {
   /**
    * The ID of the script tag
    * @default 'next-dynamic-env-script'
@@ -8,10 +8,16 @@ export interface DynamicEnvScriptProps<T = EnvVars> {
   id?: string;
 
   /**
-   * The environment variables object to inject into the client.
-   * Can be either a plain object or the result of createDynamicEnv()
+   * The client environment object from createDynamicEnv.
+   * This ensures only client-safe variables are exposed to the browser.
+   *
+   * @example
+   * ```tsx
+   * const { clientEnv } = createDynamicEnv({ ... });
+   * <DynamicEnvScript clientEnv={clientEnv} />
+   * ```
    */
-  env: DynamicEnv<T> | T | EnvVars;
+  clientEnv: ClientEnv<T>;
 
   /**
    * Optional callback for missing variables (only called in development)

@@ -1,3 +1,5 @@
+import type { ProcessedEnv } from '@/types';
+
 /**
  * Error codes used in `WaitForEnvError`
  */
@@ -14,7 +16,7 @@ export class WaitForEnvError extends Error {
   public readonly timeout?: number;
   public readonly attempts?: number;
   public readonly missingKeys?: string[];
-  public readonly details?: Record<string, unknown>;
+  public readonly details?: ProcessedEnv;
 
   constructor(
     message: string,

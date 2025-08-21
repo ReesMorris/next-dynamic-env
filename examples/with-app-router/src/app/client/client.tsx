@@ -1,30 +1,38 @@
 'use client';
 
-import { dynamicEnv } from '@/dynamic-env';
+import { clientEnv } from '@/dynamic-env';
 
 export const Client = () => {
+  // Log to verify FEATURES is an array in the browser
+  console.log('Client Component - FEATURES:', clientEnv.FEATURES);
+  console.log('Client Component - FEATURES type:', typeof clientEnv.FEATURES);
+  console.log(
+    'Client Component - Is Array?',
+    Array.isArray(clientEnv.FEATURES)
+  );
+
   return (
     <div className='container'>
       <span className='client-indicator client'>Client Component</span>
 
       <div className='env-var'>
         <span className='client-indicator client small'>Client Variable</span>
-        <strong>API_URL:</strong> {dynamicEnv.API_URL}
+        <strong>API_URL:</strong> {clientEnv.API_URL}
       </div>
 
       <div className='env-var'>
         <span className='client-indicator client small'>Client Variable</span>
-        <strong>PORT:</strong> {dynamicEnv.PORT}
+        <strong>PORT:</strong> {clientEnv.PORT}
       </div>
 
       <div className='env-var'>
         <span className='client-indicator client small'>Client Variable</span>
-        <strong>DEBUG:</strong> {dynamicEnv.DEBUG ? 'true' : 'false'}
+        <strong>DEBUG:</strong> {clientEnv.DEBUG ? 'true' : 'false'}
       </div>
 
       <div className='env-var'>
         <span className='client-indicator client small'>Client Variable</span>
-        <strong>FEATURES:</strong> {dynamicEnv.FEATURES.join(', ')}
+        <strong>FEATURES:</strong> {clientEnv.FEATURES.join(', ')}
       </div>
     </div>
   );

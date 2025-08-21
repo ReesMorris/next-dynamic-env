@@ -1,26 +1,23 @@
-import type { onValidationError } from '@/types';
-import type { z } from 'zod';
+import type { EnvEntry, OnValidationError } from '@/types';
 
 /**
  * Configuration for createDynamicEnv with server/client separation
  */
-export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
-  /**
-   * Zod schema for validating all environment variables (both server and client)
-   */
-  schema: T;
-
+export interface CreateDynamicEnvConfig<
+  TServer extends Record<string, EnvEntry> = Record<string, EnvEntry>,
+  TClient extends Record<string, EnvEntry> = Record<string, EnvEntry>
+> {
   /**
    * Server-only environment variables
    * These will only be available on the server and will throw/return undefined on the client
    */
-  server?: Partial<Record<keyof z.infer<T>, string | undefined>>;
+  server?: TServer;
 
   /**
    * Client environment variables
    * These will be available on both server and client (injected via DynamicEnvScript)
    */
-  client?: Partial<Record<keyof z.infer<T>, string | undefined>>;
+  client?: TClient;
 
   /**
    * How to handle validation errors
@@ -28,7 +25,7 @@ export interface CreateDynamicEnvConfig<T extends z.ZodObject<z.ZodRawShape>> {
    * - `'warn'`: Log a warning and continue (default in production)
    * - function: Custom error handler
    */
-  onValidationError?: onValidationError;
+  onValidationError?: OnValidationError;
 
   /**
    * Whether to skip validation (useful for build time)

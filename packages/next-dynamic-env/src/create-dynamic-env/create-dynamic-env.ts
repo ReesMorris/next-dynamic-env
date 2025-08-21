@@ -1,91 +1,105 @@
-import type { DynamicEnv } from '@/types';
+import type {
+  DynamicEnvResult,
+  EnvEntry,
+  InferEnvConfig,
+  ProcessedEnv,
+  ValidationError
+} from '@/types';
 import { isBrowser } from '@/utils';
-import type { z } from 'zod';
 import type { CreateDynamicEnvConfig } from './create-dynamic-env.types';
 import {
-  checkDuplicateKeys,
-  createEnvProxy,
-  processEmptyStrings,
-  validateRuntimeEnv
+  createClientEnvProxy,
+  createServerEnvProxy,
+  handleValidationErrors,
+  processEnvironmentVariables
 } from './utils';
 
 /**
- * Creates a type-safe environment variable accessor with server/client separation
- * @param config - Configuration with Zod schema and server/client environment variables
- * @returns An object with validated environment variables
+ * Creates type-safe environment variable accessors with server/client separation
  *
  * @example
+ * ```typescript
  * import { z } from 'zod';
  *
- * export const dynamicEnv = createDynamicEnv({
- *   schema: z.object({
- *     // Server-only variables
- *     DATABASE_URL: z.string().url(),
- *     API_SECRET: z.string().min(1),
- *     // Client variables
- *     API_URL: z.string().url(),
- *     APP_NAME: z.string().min(1),
- *   }),
+ * export const { clientEnv, serverEnv } = createDynamicEnv({
  *   server: {
- *     DATABASE_URL: process.env.DATABASE_URL,
- *     API_SECRET: process.env.API_SECRET,
+ *     DATABASE_URL: [process.env.DATABASE_URL, z.url()],
+ *     API_SECRET: process.env.API_SECRET, // No validation
  *   },
  *   client: {
- *     API_URL: process.env.API_URL,
- *     APP_NAME: process.env.APP_NAME,
+ *     API_URL: [process.env.NEXT_PUBLIC_API_URL, z.url()],
+ *     APP_NAME: [process.env.NEXT_PUBLIC_APP_NAME, z.string().min(1)],
+ *     DEBUG: process.env.NEXT_PUBLIC_DEBUG, // No validation
  *   }
  * });
+ *
+ * // In layout.tsx
+ * <DynamicEnvScript clientEnv={clientEnv} />
+ *
+ * // In server components
+ * const db = connect(serverEnv.DATABASE_URL);
+ *
+ * // In client components
+ * console.log(clientEnv.API_URL);
+ * ```
  */
-export function createDynamicEnv<T extends z.ZodObject<z.ZodRawShape>>(
-  config: CreateDynamicEnvConfig<T>
-): DynamicEnv<z.infer<T>> {
+export const createDynamicEnv = <
+  TServer extends Record<string, EnvEntry>,
+  TClient extends Record<string, EnvEntry>
+>(
+  config: CreateDynamicEnvConfig<TServer, TClient>
+): DynamicEnvResult<InferEnvConfig<TClient>, InferEnvConfig<TServer>> => {
   const {
-    schema,
-    server = {},
-    client = {},
+    server = {} as TServer,
+    client = {} as TClient,
     onValidationError = 'throw',
     skipValidation = false,
     emptyStringAsUndefined = true
   } = config;
 
-  // Extract client keys for the proxy to know what's available on client
-  const clientKeys = Object.keys(client) as Array<keyof z.infer<T>>;
-  const serverKeys = Object.keys(server) as Array<keyof z.infer<T>>;
+  // Initialize environment objects
+  let processedClientEnv: ProcessedEnv = {};
+  let rawClientEnv: ProcessedEnv = {};
+  let processedServerEnv: ProcessedEnv = {};
+  let rawServerEnv: ProcessedEnv = {};
+  const allErrors: ValidationError[] = [];
 
-  // Check for duplicate keys between server and client
-  checkDuplicateKeys(clientKeys, serverKeys);
+  // Only process on server - in browser, values come from window
+  if (!isBrowser()) {
+    // Process server variables
+    const serverResult = processEnvironmentVariables(
+      server,
+      skipValidation,
+      emptyStringAsUndefined
+    );
+    processedServerEnv = serverResult.processedEnv;
+    rawServerEnv = serverResult.rawEnv;
+    allErrors.push(...serverResult.errors);
 
-  // Process environment variables: convert empty strings to undefined if enabled
-  let processedServer = { ...server };
-  let processedClient = { ...client };
-
-  // If `emptyStringAsUndefined` is true, convert empty strings to undefined
-  if (emptyStringAsUndefined) {
-    processedServer = processEmptyStrings(processedServer);
-    processedClient = processEmptyStrings(processedClient);
+    // Process client variables
+    const clientResult = processEnvironmentVariables(
+      client,
+      skipValidation,
+      emptyStringAsUndefined
+    );
+    processedClientEnv = clientResult.processedEnv;
+    rawClientEnv = clientResult.rawEnv;
+    allErrors.push(...clientResult.errors);
   }
 
-  // Combine server and client env vars (client takes precedence)
-  const runtimeEnv = { ...processedServer, ...processedClient };
+  // Handle validation errors
+  handleValidationErrors(allErrors, onValidationError, skipValidation);
 
-  // On the client side, skip initial validation since process.env values are undefined
-  // Validation will happen when accessing values from the window object
-  const shouldSkipInitialValidation = isBrowser() || skipValidation;
+  // Create separate proxies for client and server
+  const clientEnv = createClientEnvProxy(
+    processedClientEnv as InferEnvConfig<TClient>,
+    rawClientEnv
+  );
 
-  // Validate runtime environment (skip on client or if explicitly requested)
-  const validatedEnv = validateRuntimeEnv({
-    schema,
-    runtimeEnv,
-    onValidationError,
-    skipValidation: shouldSkipInitialValidation
-  });
+  const serverEnv = createServerEnvProxy(
+    processedServerEnv as InferEnvConfig<TServer>,
+    rawServerEnv
+  );
 
-  return createEnvProxy<z.infer<T>>({
-    envVars: validatedEnv as z.infer<T>,
-    rawEnvVars: runtimeEnv, // Pass original values for __raw
-    clientKeys,
-    serverKeys,
-    schema,
-    onValidationError
-  });
-}
+  return { clientEnv, serverEnv };
+};

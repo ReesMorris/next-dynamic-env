@@ -1,3 +1,4 @@
+import { DEFAULT_WINDOW_ENV_VAR_NAME } from '@/constants';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { waitForEnv } from './wait-for-env';
 import { WaitForEnvError } from './wait-for-env-error';
@@ -60,7 +61,7 @@ describe('waitForEnv', () => {
 
       // Set env after 50ms
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = { API_URL: 'test' };
       }, 50);
 
       await vi.advanceTimersByTimeAsync(100);
@@ -123,7 +124,7 @@ describe('waitForEnv', () => {
 
       // Set env during second attempt
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = { API_URL: 'test' };
       }, 50);
 
       await vi.advanceTimersByTimeAsync(100);
@@ -147,7 +148,7 @@ describe('waitForEnv', () => {
 
       // Set partial env
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'test',
           APP_NAME: 'MyApp'
         };
@@ -163,7 +164,7 @@ describe('waitForEnv', () => {
 
       // Add missing key
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'test',
           APP_NAME: 'MyApp',
           SECRET_KEY: 'secret'
@@ -194,7 +195,7 @@ describe('waitForEnv', () => {
       const expectation = expect(promise).rejects.toThrow(WaitForEnvError);
 
       // Set partial env
-      (window as any).__NEXT_DYNAMIC_ENV__ = { API_URL: 'test' };
+      window[DEFAULT_WINDOW_ENV_VAR_NAME] = { API_URL: 'test' };
 
       await vi.advanceTimersByTimeAsync(150);
 
@@ -217,7 +218,7 @@ describe('waitForEnv', () => {
 
       // Set env with invalid URL
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'http://insecure.com'
         };
       }, 50);
@@ -229,7 +230,7 @@ describe('waitForEnv', () => {
 
       // Update to valid URL
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'https://secure.com'
         };
       }, 50);
@@ -252,7 +253,7 @@ describe('waitForEnv', () => {
 
       // Set env with all keys but invalid validation
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'test',
           PORT: 500
         };
@@ -265,7 +266,7 @@ describe('waitForEnv', () => {
 
       // Fix validation
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'test',
           PORT: 3000
         };
@@ -377,7 +378,7 @@ describe('waitForEnv', () => {
       });
 
       setTimeout(() => {
-        (window as any).__NEXT_DYNAMIC_ENV__ = {
+        window[DEFAULT_WINDOW_ENV_VAR_NAME] = {
           API_URL: 'https://api.example.com',
           PORT: 3000
         };
