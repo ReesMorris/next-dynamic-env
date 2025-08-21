@@ -1,100 +1,183 @@
+import { isBrowser } from '@/utils/is-browser/is-browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { handleValidationErrors } from './handle-validation-errors';
 
+vi.mock('@/utils/is-browser/is-browser', () => ({
+  isBrowser: vi.fn(() => false)
+}));
+
+vi.mock('./create-plain-message', () => ({
+  createPlainMessage: vi.fn(
+    (errors: any) => `Plain message: ${errors.length} errors`
+  )
+}));
+
+vi.mock('./create-pretty-message', () => ({
+  createPrettyMessage: vi.fn(
+    (errors: any) => `Pretty message: ${errors.length} errors`
+  )
+}));
+
 describe('handleValidationErrors', () => {
+  const originalExit = process.exit;
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.exit = vi.fn() as any;
+    console.error = vi.fn();
+    console.warn = vi.fn();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    process.exit = originalExit;
+    console.error = originalConsoleError;
+    console.warn = originalConsoleWarn;
+  });
+
+  describe('when skipValidation is true', () => {
+    it('should do nothing regardless of errors', () => {
+      const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
+
+      handleValidationErrors(errors, 'throw', true);
+
+      expect(process.exit).not.toHaveBeenCalled();
+      expect(console.error).not.toHaveBeenCalled();
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when errors array is empty', () => {
+    it('should do nothing', () => {
+      handleValidationErrors([], 'throw', false);
+
+      expect(process.exit).not.toHaveBeenCalled();
+      expect(console.error).not.toHaveBeenCalled();
+      expect(console.warn).not.toHaveBeenCalled();
+    });
   });
 
   describe('when onValidationError is "throw"', () => {
-    it('should throw an error with formatted message when there are errors', () => {
-      const errors = [
-        { key: 'API_URL', error: new Error('Invalid URL format') },
-        { key: 'PORT', error: new Error('Must be a positive number') }
-      ];
+    describe('in Node environment', () => {
+      beforeEach(() => {
+        vi.mocked(isBrowser).mockReturnValue(false);
+      });
 
-      expect(() => handleValidationErrors(errors, 'throw', false)).toThrowError(
-        'Environment validation failed:\n' +
-          '  - API_URL: Invalid URL format\n' +
-          '  - PORT: Must be a positive number'
-      );
+      it('should console.error pretty message and exit process', () => {
+        const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
+
+        handleValidationErrors(errors, 'throw', false);
+
+        expect(console.error).toHaveBeenCalledWith('Pretty message: 1 errors');
+        expect(process.exit).toHaveBeenCalledWith(1);
+      });
     });
 
-    it('should handle non-Error objects in errors', () => {
-      const errors = [
-        { key: 'API_URL', error: 'String error' },
-        { key: 'PORT', error: { message: 'Object error' } }
-      ];
+    describe('in browser environment', () => {
+      beforeEach(() => {
+        vi.mocked(isBrowser).mockReturnValue(true);
+      });
 
-      expect(() => handleValidationErrors(errors, 'throw', false)).toThrowError(
-        'Environment validation failed:\n' +
-          '  - API_URL: String error\n' +
-          '  - PORT: [object Object]'
-      );
+      it('should throw error with plain message', () => {
+        const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
+
+        expect(() => handleValidationErrors(errors, 'throw', false)).toThrow(
+          'Plain message: 1 errors'
+        );
+
+        expect(console.error).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe('when onValidationError is "warn"', () => {
-    it('should console.warn the error message', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const errors = [
-        { key: 'DATABASE_URL', error: new Error('Connection failed') }
-      ];
+    describe('in Node environment', () => {
+      beforeEach(() => {
+        vi.mocked(isBrowser).mockReturnValue(false);
+      });
 
-      handleValidationErrors(errors, 'warn', false);
+      it('should console.warn pretty message', () => {
+        const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        'Environment validation failed:\n  - DATABASE_URL: Connection failed'
-      );
+        handleValidationErrors(errors, 'warn', false);
+
+        expect(console.warn).toHaveBeenCalledWith('Pretty message: 1 errors');
+        expect(console.error).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('in browser environment', () => {
+      beforeEach(() => {
+        vi.mocked(isBrowser).mockReturnValue(true);
+      });
+
+      it('should console.warn plain message', () => {
+        const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
+
+        handleValidationErrors(errors, 'warn', false);
+
+        expect(console.warn).toHaveBeenCalledWith('Plain message: 1 errors');
+        expect(console.error).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe('when onValidationError is a custom function', () => {
-    it('should call the custom function with formatted error', () => {
+    it('should call custom function with Error containing plain message', () => {
       const customHandler = vi.fn();
-      const errors = [{ key: 'SECRET', error: new Error('Secret not found') }];
+      const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
 
       handleValidationErrors(errors, customHandler, false);
 
       expect(customHandler).toHaveBeenCalledOnce();
       const calledError = customHandler.mock.calls[0][0];
       expect(calledError).toBeInstanceOf(Error);
-      expect(calledError.message).toBe(
-        'Environment validation failed:\n  - SECRET: Secret not found'
+      expect(calledError.message).toBe('Plain message: 1 errors');
+
+      expect(console.error).not.toHaveBeenCalled();
+      expect(console.warn).not.toHaveBeenCalled();
+      expect(process.exit).not.toHaveBeenCalled();
+    });
+
+    it('should work in both browser and Node', () => {
+      const customHandler = vi.fn();
+      const errors = [{ key: 'API_URL', error: new Error('Invalid') }];
+
+      // Test in Node
+      vi.mocked(isBrowser).mockReturnValue(false);
+      handleValidationErrors(errors, customHandler, false);
+
+      // Test in browser
+      vi.mocked(isBrowser).mockReturnValue(true);
+      handleValidationErrors(errors, customHandler, false);
+
+      expect(customHandler).toHaveBeenCalledTimes(2);
+      expect(customHandler.mock.calls[0][0].message).toBe(
+        'Plain message: 1 errors'
+      );
+      expect(customHandler.mock.calls[1][0].message).toBe(
+        'Plain message: 1 errors'
       );
     });
   });
 
-  describe('edge cases', () => {
-    it('should not throw when errors array is empty', () => {
-      expect(() => handleValidationErrors([], 'throw', false)).not.toThrow();
-    });
-
-    it('should not throw when skipValidation is true', () => {
-      const errors = [{ key: 'VAR', error: new Error('Error') }];
-
-      expect(() => handleValidationErrors(errors, 'throw', true)).not.toThrow();
-    });
-
-    // Note: Browser check is tested implicitly through integration tests
-    // since mocking isBrowser module import is complex
-
-    it('should handle multiple errors with mixed error types', () => {
+  describe('with multiple errors', () => {
+    it('should handle multiple errors correctly', () => {
       const errors = [
-        { key: 'VAR1', error: new Error('Error 1') },
-        { key: 'VAR2', error: 'String error' },
-        { key: 'VAR3', error: null },
-        { key: 'VAR4', error: undefined },
-        { key: 'VAR5', error: 123 }
+        { key: 'API_URL', error: new Error('Invalid URL') },
+        { key: 'PORT', error: new Error('Must be number') },
+        { key: 'SECRET', error: new Error('Required') }
       ];
 
-      expect(() => handleValidationErrors(errors, 'throw', false)).toThrowError(
-        /VAR1: Error 1.*VAR2: String error.*VAR3: null.*VAR4: undefined.*VAR5: 123/s
-      );
+      vi.mocked(isBrowser).mockReturnValue(false);
+      handleValidationErrors(errors, 'throw', false);
+
+      expect(console.error).toHaveBeenCalledWith('Pretty message: 3 errors');
+      expect(process.exit).toHaveBeenCalledWith(1);
     });
   });
 });
