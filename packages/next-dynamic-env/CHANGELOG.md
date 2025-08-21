@@ -1,5 +1,39 @@
 # next-dynamic-env
 
+## 0.4.0
+
+### Minor Changes
+
+- [#11](https://github.com/ReesMorris/next-dynamic-env/pull/11) [`6a22f62`](https://github.com/ReesMorris/next-dynamic-env/commit/6a22f62de541237b3e1cad22ebea9e3b6f10c5c3) Thanks [@ReesMorris](https://github.com/ReesMorris)! - feat: separate client and server environments for enhanced security
+
+  **Breaking Changes:**
+
+  - `createDynamicEnv` now returns `{ clientEnv, serverEnv }` instead of a single `env` object
+  - `DynamicEnvScript` now only accepts `ClientEnv` type
+  - Removed backward compatibility with combined environment object
+
+  **Security Fix:**
+
+  - Server-only environment variables can no longer be accidentally exposed to the browser through React Server Components
+
+  **Migration:**
+
+  ```typescript
+  // Before
+  const env = createDynamicEnv({ client: {...}, server: {...} });
+  <DynamicEnvScript env={env} />
+
+  // After
+  const { clientEnv, serverEnv } = createDynamicEnv({ client: {...}, server: {...} });
+  <DynamicEnvScript clientEnv={clientEnv} />
+  ```
+
+  **Additional Improvements:**
+
+  - Added TypeScript discriminators (`__isClient` and `__isServer`) for compile-time type safety
+  - Made `processEnvironmentVariables` a pure function
+  - Removed duplicate key checking as environments are now separate
+
 ## 0.3.0
 
 ### Minor Changes
