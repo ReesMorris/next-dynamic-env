@@ -1,5 +1,5 @@
-import { clientEnv } from '@/dynamic-env';
 import { DynamicEnvScript } from 'next-dynamic-env';
+import { clientEnv } from '../../env';
 import './globals.css';
 
 interface LayoutProps {

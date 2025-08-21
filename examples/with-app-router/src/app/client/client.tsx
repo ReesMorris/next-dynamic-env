@@ -1,6 +1,6 @@
 'use client';
 
-import { clientEnv } from '@/dynamic-env';
+import { clientEnv } from '@/env';
 
 export const Client = () => {
   // Log to verify FEATURES is an array in the browser

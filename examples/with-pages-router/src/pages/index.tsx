@@ -1,6 +1,6 @@
+import { clientEnv } from '@/env';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
-import { dynamicEnv } from '../../dynamic-env';
 
 const HomePage = () => {
   // Use state to track if we're on the client after hydration
@@ -45,23 +45,23 @@ const HomePage = () => {
           </span>
 
           <div className='env-var'>
-            <strong>API_URL:</strong> {dynamicEnv.API_URL}
+            <strong>API_URL:</strong> {clientEnv.API_URL}
           </div>
 
           <div className='env-var'>
-            <strong>APP_NAME:</strong> {dynamicEnv.APP_NAME}
+            <strong>APP_NAME:</strong> {clientEnv.APP_NAME}
           </div>
 
           <div className='env-var'>
-            <strong>PORT:</strong> {dynamicEnv.PORT}
+            <strong>PORT:</strong> {clientEnv.PORT}
           </div>
 
           <div className='env-var'>
-            <strong>DEBUG:</strong> {dynamicEnv.DEBUG ? 'true' : 'false'}
+            <strong>DEBUG:</strong> {clientEnv.DEBUG ? 'true' : 'false'}
           </div>
 
           <div className='env-var'>
-            <strong>FEATURES:</strong> {dynamicEnv.FEATURES.join(', ')}
+            <strong>FEATURES:</strong> {clientEnv.FEATURES.join(', ')}
           </div>
         </div>
 

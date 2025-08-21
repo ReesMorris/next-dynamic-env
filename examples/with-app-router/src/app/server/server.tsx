@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { clientEnv, serverEnv } from '@/dynamic-env';
+import { clientEnv, serverEnv } from '@/env';
 
 export const Server = () => {
   return (

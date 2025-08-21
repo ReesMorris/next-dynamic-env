@@ -1,4 +1,4 @@
-import { clientEnv } from '@/dynamic-env';
+import { clientEnv } from '@/env';
 import { waitForEnv } from 'next-dynamic-env';
 
 (async () => {

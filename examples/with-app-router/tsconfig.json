@@ -20,8 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/dynamic-env": ["./dynamic-env.ts"],
-      "@/dynamic-env-with-validation": ["./dynamic-env-with-validation.ts"]
+      "@/env": ["./env.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
