@@ -10,12 +10,15 @@ on:
       - 'examples/**'
       - '.changeset/config.json'
 
+permissions:
+  contents: read
+
 jobs:
   check-changeset:
     name: Check for changeset
     runs-on: ubuntu-latest
-    # Skip for release PRs created by changesets
-    if: github.head_ref != 'changeset-release/main'
+    # Skip for release PRs created by changesets and Dependabot PRs
+    if: github.head_ref != 'changeset-release/main' && github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
