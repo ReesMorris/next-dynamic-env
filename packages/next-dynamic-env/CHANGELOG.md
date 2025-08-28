@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 1.2.2
+
+### Patch Changes
+
+- [`121609d`](https://github.com/ReesMorris/next-dynamic-env/commit/121609d7d3dd4dbd6ef9b03eaf8cd7b37c38e10e) Thanks [@ReesMorris](https://github.com/ReesMorris)! - Update dependencies
+
 ## 1.2.1
 
 ### Patch Changes
