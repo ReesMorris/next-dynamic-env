@@ -55,7 +55,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
+    "@biomejs/biome": "^2.2.6",
     "@standard-schema/spec": "^1.0.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
