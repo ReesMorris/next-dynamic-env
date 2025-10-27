@@ -67,7 +67,7 @@
     "esbuild-plugin-alias-path": "^2.0.2",
     "happy-dom": "^18.0.1",
     "next": "15.5.2",
-    "react": "19.1.1",
+    "react": "19.2.0",
     "tsup": "^8.5.0",
     "typescript": "^5",
     "vitest": "^3.2.4"
