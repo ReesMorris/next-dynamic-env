@@ -33,7 +33,7 @@
     "@changesets/cli": "^2.29.6",
     "@types/node": "^24",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
+    "lint-staged": "^16.2.6",
     "syncpack": "^14.0.0-alpha.19",
     "turbo": "^2.5.6",
     "typescript": "^5",
