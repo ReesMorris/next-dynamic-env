@@ -20,7 +20,7 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       
       # Skip tests for release commits but still report success
       - name: Skip tests for release commits
