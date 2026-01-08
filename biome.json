@@ -68,8 +68,10 @@
         "useUniqueElementIds": "warn"
       },
       "nursery": {
-        "noSecrets": "off",
         "useExplicitType": "off"
+      },
+      "security": {
+        "noSecrets": "off"
       },
       "performance": {
         "useTopLevelRegex": "warn",
