@@ -33,8 +33,6 @@ jobs:
       - name: Setup pnpm
         if: '!contains(github.event.head_commit.message, ''chore: release package'')'
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.0
       
       - name: Setup Node.js
         if: '!contains(github.event.head_commit.message, ''chore: release package'')'
