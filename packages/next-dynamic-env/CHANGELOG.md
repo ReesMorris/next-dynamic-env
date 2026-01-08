@@ -1,5 +1,15 @@
 # next-dynamic-env
 
+## 1.3.0
+
+### Minor Changes
+
+- [`5af2452`](https://github.com/ReesMorris/next-dynamic-env/commit/5af2452fc75f19c0d6b2b073bf8914106da88409) Thanks [@ReesMorris](https://github.com/ReesMorris)! - updates package versions
+
+### Patch Changes
+
+- [`ab22c19`](https://github.com/ReesMorris/next-dynamic-env/commit/ab22c19570bb6231e3a3792023ba237863f734e1) Thanks [@ReesMorris](https://github.com/ReesMorris)! - align pnpm version source
+
 ## 1.2.2
 
 ### Patch Changes
