@@ -27,8 +27,8 @@ importers:
         specifier: ^16.2.7
         version: 16.2.7
       syncpack:
-        specifier: ^14.0.0-alpha.19
-        version: 14.0.0-alpha.19
+        specifier: ^14.0.0-canary.1
+        version: 14.0.0-canary.1
       turbo:
         specifier: ^2.7.3
         version: 2.7.3
@@ -154,13 +154,13 @@ importers:
         version: 19.2.3
       tsup:
         specifier: ^8.5.1
-        version: 8.5.1(postcss@8.5.6)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.2)(yaml@2.8.1)
       typescript:
         specifier: ^5
         version: 5.9.2
       vitest:
         specifier: ^4.0.16
-        version: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.20.4)(yaml@2.8.1)
+        version: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.21.0)(yaml@2.8.1)
 
 packages:
 
@@ -175,10 +175,6 @@ packages:
     resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helper-validator-identifier@7.27.1':
-    resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/helper-validator-identifier@7.28.5':
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
@@ -190,6 +186,10 @@ packages:
 
   '@babel/runtime@7.28.3':
     resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.28.4':
+    resolution: {integrity: sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.28.5':
@@ -1388,8 +1388,8 @@ packages:
     resolution: {integrity: sha512-vpeMIQKxczTD/0s2CdEWHcb0eeJe6TFjxb+J5xgX7hScxqrGuyjmv4c1D4A/gelKfyox0gJJwIHF+fLjeaM8kQ==}
     engines: {node: '>=18'}
 
-  get-tsconfig@4.10.1:
-    resolution: {integrity: sha512-auHyJ4AgMz7vgS8Hp3N6HXSmlMdUyhSUrfBF16w153rxtLIEOE+HGqaBppczZvnHLqQJfiHotCYpNhl0lUROFQ==}
+  get-tsconfig@4.13.0:
+    resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -1963,40 +1963,57 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  syncpack-darwin-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-Xw4Q86Cf/55hE4xYxYZCEr98CqPpCF1IXPvr8EI+grAb44cE3BeQsi7SnmQNMGQ9Nibu2kr7D1fxGpQWdR+odg==}
+  syncpack-darwin-arm64@14.0.0-canary.1:
+    resolution: {integrity: sha512-tKxNtRWLXyfM3BHzYC4lJTbv5I0cz9rh12hHGCO5zclGj2+pcZGKDG6frZmFrBEhEkHyzdYBxv75PsYi8+NoNg==}
     cpu: [arm64]
     os: [darwin]
-
-  syncpack-darwin-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-e+10rBn13KEfWYNY7/GUTnfv7XrvmRhTMbl+4m922/O2fx2v515mbHx5ku1KvN3Gz5Up3y459bslS9+aIx0kCA==}
-    cpu: [x64]
-    os: [darwin]
-
-  syncpack-linux-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-X8XeQ06uQ8ZyuK1hSXaHBneBUGSfe0/eA9ZCoARQr6TD6fF3CT45nDSVtV9y3qrmL3S2u4Rc0/wW6J5VbpIi/Q==}
-    cpu: [arm64]
-    os: [linux]
-
-  syncpack-linux-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-eRaJcflvzZhawn67/0QZPS6VtOu2b8sl5DlpdmumgZ7yb1r77Q0Lxf5xHV3juYxnnL8xsZ8svXTvZMSpypsQkg==}
-    cpu: [x64]
-    os: [linux]
-
-  syncpack-windows-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-JRpr1xg4xJCdeitLjohtIN1d6njxE0/r/X2KVHUAAzUVSvl0y3OIk8j5QS9/qN8toOLwjO209zdRx03GNA+SGw==}
-    cpu: [arm64]
-    os: [win32]
-
-  syncpack-windows-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-kxCMO0VJQU8M/5CfWD1v566QISzbQmMBkuQN/zrfDxQJa/Q0jkz+VeqJuUVL9m4bmPBik9FlpatCNPmHEV5hMA==}
-    cpu: [x64]
-    os: [win32]
-
-  syncpack@14.0.0-alpha.19:
-    resolution: {integrity: sha512-gFOMbycrzlGpYgnVwiKzW9p8y9cUPTDrfiofMFPt70/yVOwCBuEYZM/wfdkXVhZd7HwQQT0+MEYHiO+HqyaH2w==}
-    engines: {node: '>=14.17.0'}
     hasBin: true
+
+  syncpack-darwin-x64@14.0.0-canary.1:
+    resolution: {integrity: sha512-yUzrgmM30og8nUjrVE/ARnZgBbVpnLSpZHc1cV4O8Dgv9X2tMe1KNcIC2zWS1P8mwaD+rejr5E1nMMUFmQnj2w==}
+    cpu: [x64]
+    os: [darwin]
+    hasBin: true
+
+  syncpack-linux-arm64-musl@14.0.0-canary.1:
+    resolution: {integrity: sha512-VbHlZGLkib3MgO57T1xoge/AupEsnmaZsT8K2PnX43PsFTaO1+3T1MFlrY+E7tg1C5FBMrFkIKLUOFe9uZaAZg==}
+    cpu: [arm64]
+    os: [linux]
+    hasBin: true
+
+  syncpack-linux-arm64@14.0.0-canary.1:
+    resolution: {integrity: sha512-zKZOdWGR4dKyhJ81q/VkdHe8vdrTXAnQGT2M66f2VM50ORWzrT0+f5wd5IN0p3VcshK9tIwWgbn3YsG67biGWw==}
+    cpu: [arm64]
+    os: [linux]
+    hasBin: true
+
+  syncpack-linux-x64-musl@14.0.0-canary.1:
+    resolution: {integrity: sha512-Ut7NgEVqaCrARt5GD2b1mSEywlAMrSNfEjqestQcjKZ/l8HjK7kXIEIcX+mgdKCZd3sLMZq0xThlrjjGRhq3Sg==}
+    cpu: [x64]
+    os: [linux]
+    hasBin: true
+
+  syncpack-linux-x64@14.0.0-canary.1:
+    resolution: {integrity: sha512-GfST2ALUZmaxifihKn+zMKxVIhcrbiw3ZfAZEvvSz8IveyZjukULSy9dnF8npzXP5vnTmoBKhO0yqN4dR1WbgA==}
+    cpu: [x64]
+    os: [linux]
+    hasBin: true
+
+  syncpack-windows-arm64@14.0.0-canary.1:
+    resolution: {integrity: sha512-WLzNLToHWZ0vvf2AY7orQUWTB+zsH+mWeD+638UhBmwQ5DQKpMjLc+YcpKIdEet6v/VvlPSiLT8DGe9qZATh8w==}
+    cpu: [arm64]
+    os: [win32]
+    hasBin: true
+
+  syncpack-windows-x64@14.0.0-canary.1:
+    resolution: {integrity: sha512-t27cVIdZpQ/IIpsiB2nIF5bo7vCjGJulpcazg3jKAEa9PShSh+A4uRWtHNZzm7fn4MQIaSABUdLDbsqVfRgKRA==}
+    cpu: [x64]
+    os: [win32]
+    hasBin: true
+
+  syncpack@14.0.0-canary.1:
+    resolution: {integrity: sha512-ckUeoGpxG2jweY0MOn1pLKcu8huNYSAuhlUGkiUpPis1vkRMEM7Fo0bay4DyUU4dMtv+ryPcW/DfNvnq9yNm1A==}
+    engines: {node: '>=14.17.0'}
 
   term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
@@ -2077,8 +2094,8 @@ packages:
       typescript:
         optional: true
 
-  tsx@4.20.4:
-    resolution: {integrity: sha512-yyxBKfORQ7LuRt/BQKBXrpcq59ZvSW0XxwfjAt3w2/8PmdxaFzijtMhTawprSHhpzeM5BgU2hXHG3lklIERZXg==}
+  tsx@4.21.0:
+    resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2284,13 +2301,11 @@ snapshots:
 
   '@babel/code-frame@7.27.1':
     dependencies:
-      '@babel/helper-validator-identifier': 7.27.1
+      '@babel/helper-validator-identifier': 7.28.5
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
   '@babel/helper-string-parser@7.27.1': {}
-
-  '@babel/helper-validator-identifier@7.27.1': {}
 
   '@babel/helper-validator-identifier@7.28.5': {}
 
@@ -2299,6 +2314,8 @@ snapshots:
       '@babel/types': 7.28.5
 
   '@babel/runtime@7.28.3': {}
+
+  '@babel/runtime@7.28.4': {}
 
   '@babel/types@7.28.5':
     dependencies:
@@ -2922,7 +2939,7 @@ snapshots:
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.28.3
+      '@babel/runtime': 7.28.4
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -3000,7 +3017,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.20.4)(yaml@2.8.1)
+      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.21.0)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -3013,13 +3030,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.16(vite@7.1.3(@types/node@25.0.3)(tsx@4.20.4)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.16(vite@7.1.3(@types/node@25.0.3)(tsx@4.21.0)(yaml@2.8.1))':
     dependencies:
       '@vitest/spy': 4.0.16
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.1.3(@types/node@25.0.3)(tsx@4.20.4)(yaml@2.8.1)
+      vite: 7.1.3(@types/node@25.0.3)(tsx@4.21.0)(yaml@2.8.1)
 
   '@vitest/pretty-format@4.0.16':
     dependencies:
@@ -3047,7 +3064,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.20.4)(yaml@2.8.1)
+      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.21.0)(yaml@2.8.1)
 
   '@vitest/utils@4.0.16':
     dependencies:
@@ -3353,7 +3370,7 @@ snapshots:
 
   get-east-asian-width@1.3.0: {}
 
-  get-tsconfig@4.10.1:
+  get-tsconfig@4.13.0:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
@@ -3686,12 +3703,12 @@ snapshots:
       mlly: 1.7.4
       pathe: 2.0.3
 
-  postcss-load-config@6.0.1(postcss@8.5.6)(tsx@4.20.4)(yaml@2.8.1):
+  postcss-load-config@6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       postcss: 8.5.6
-      tsx: 4.20.4
+      tsx: 4.21.0
       yaml: 2.8.1
 
   postcss@8.4.31:
@@ -3925,34 +3942,42 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  syncpack-darwin-arm64@14.0.0-alpha.19:
+  syncpack-darwin-arm64@14.0.0-canary.1:
     optional: true
 
-  syncpack-darwin-x64@14.0.0-alpha.19:
+  syncpack-darwin-x64@14.0.0-canary.1:
     optional: true
 
-  syncpack-linux-arm64@14.0.0-alpha.19:
+  syncpack-linux-arm64-musl@14.0.0-canary.1:
     optional: true
 
-  syncpack-linux-x64@14.0.0-alpha.19:
+  syncpack-linux-arm64@14.0.0-canary.1:
     optional: true
 
-  syncpack-windows-arm64@14.0.0-alpha.19:
+  syncpack-linux-x64-musl@14.0.0-canary.1:
     optional: true
 
-  syncpack-windows-x64@14.0.0-alpha.19:
+  syncpack-linux-x64@14.0.0-canary.1:
     optional: true
 
-  syncpack@14.0.0-alpha.19:
+  syncpack-windows-arm64@14.0.0-canary.1:
+    optional: true
+
+  syncpack-windows-x64@14.0.0-canary.1:
+    optional: true
+
+  syncpack@14.0.0-canary.1:
     dependencies:
-      tsx: 4.20.4
+      tsx: 4.21.0
     optionalDependencies:
-      syncpack-darwin-arm64: 14.0.0-alpha.19
-      syncpack-darwin-x64: 14.0.0-alpha.19
-      syncpack-linux-arm64: 14.0.0-alpha.19
-      syncpack-linux-x64: 14.0.0-alpha.19
-      syncpack-windows-arm64: 14.0.0-alpha.19
-      syncpack-windows-x64: 14.0.0-alpha.19
+      syncpack-darwin-arm64: 14.0.0-canary.1
+      syncpack-darwin-x64: 14.0.0-canary.1
+      syncpack-linux-arm64: 14.0.0-canary.1
+      syncpack-linux-arm64-musl: 14.0.0-canary.1
+      syncpack-linux-x64: 14.0.0-canary.1
+      syncpack-linux-x64-musl: 14.0.0-canary.1
+      syncpack-windows-arm64: 14.0.0-canary.1
+      syncpack-windows-x64: 14.0.0-canary.1
 
   term-size@2.2.1: {}
 
@@ -4000,7 +4025,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(postcss@8.5.6)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1):
+  tsup@8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.2)(yaml@2.8.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.2)
       cac: 6.7.14
@@ -4011,7 +4036,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.20.4)(yaml@2.8.1)
+      postcss-load-config: 6.0.1(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.1)
       resolve-from: 5.0.0
       rollup: 4.46.2
       source-map: 0.7.6
@@ -4028,10 +4053,10 @@ snapshots:
       - tsx
       - yaml
 
-  tsx@4.20.4:
+  tsx@4.21.0:
     dependencies:
-      esbuild: 0.25.9
-      get-tsconfig: 4.10.1
+      esbuild: 0.27.2
+      get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -4076,7 +4101,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  vite@7.1.3(@types/node@25.0.3)(tsx@4.20.4)(yaml@2.8.1):
+  vite@7.1.3(@types/node@25.0.3)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       esbuild: 0.25.9
       fdir: 6.5.0(picomatch@4.0.3)
@@ -4087,13 +4112,13 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.0.3
       fsevents: 2.3.3
-      tsx: 4.20.4
+      tsx: 4.21.0
       yaml: 2.8.1
 
-  vitest@4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.20.4)(yaml@2.8.1):
+  vitest@4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(happy-dom@20.1.0)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.1.3(@types/node@25.0.3)(tsx@4.20.4)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.16(vite@7.1.3(@types/node@25.0.3)(tsx@4.21.0)(yaml@2.8.1))
       '@vitest/pretty-format': 4.0.16
       '@vitest/runner': 4.0.16
       '@vitest/snapshot': 4.0.16
@@ -4110,7 +4135,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.1.3(@types/node@25.0.3)(tsx@4.20.4)(yaml@2.8.1)
+      vite: 7.1.3(@types/node@25.0.3)(tsx@4.21.0)(yaml@2.8.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.0.3
