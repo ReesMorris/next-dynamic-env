@@ -65,7 +65,7 @@
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
     "esbuild-plugin-alias-path": "^2.0.2",
-    "happy-dom": "^20.1.0",
+    "happy-dom": "^20.3.3",
     "next": "16.1.1",
     "react": "19.2.3",
     "tsup": "^8.5.1",
