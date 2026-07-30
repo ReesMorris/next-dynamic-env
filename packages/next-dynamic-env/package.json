@@ -66,10 +66,11 @@
     "@vitest/ui": "^4.0.16",
     "esbuild-plugin-alias-path": "^2.0.2",
     "happy-dom": "^20.1.0",
-    "next": "16.1.1",
-    "react": "19.2.3",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "tsup": "^8.5.1",
-    "typescript": "^5",
+    "typescript": "6.0.3",
     "vitest": "^4.0.16"
   },
   "publishConfig": {

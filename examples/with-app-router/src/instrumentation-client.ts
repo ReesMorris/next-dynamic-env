@@ -1,17 +1,12 @@
-import { clientEnv } from '@/env';
-import { waitForEnv } from 'next-dynamic-env';
+import { loadDeploymentEnvironment } from './app/environment-bootstrap';
 
-(async () => {
-  // This will be undefined
-  console.log('This is undefined:', clientEnv.API_URL);
-
-  // Wait for the environment to be ready
-  await waitForEnv({
-    onReady: () => {
-      console.log('Environment is ready');
-    }
+loadDeploymentEnvironment()
+  .then(({ values }) => {
+    // Only Env-dependent instrumentation waits for this validated bootstrap.
+    console.log('Environment is ready for instrumentation:', values.apiOrigin);
+  })
+  .catch(() => {
+    console.error(
+      'Astilba Env bootstrap failed; environment-dependent instrumentation was not started.'
+    );
   });
-
-  // Now it should be defined
-  console.log('This is defined:', clientEnv.API_URL);
-})();

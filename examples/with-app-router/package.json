@@ -2,27 +2,28 @@
   "name": "with-app-router",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "pnpm env:check && next build",
     "check": "pnpm run lint && pnpm run typecheck",
     "dev": "next dev --turbopack",
-    "format": "biome format --write .",
-    "lint": "biome check --fix .",
+    "env:check": "astilba-env generate --config astilba.env.mts --check",
+    "env:generate": "astilba-env generate --config astilba.env.mts",
+    "format": "biome format --write src next.config.ts astilba.env.mts verify.mts",
+    "lint": "biome check --fix src next.config.ts astilba.env.mts verify.mts",
     "start": "next start",
+    "test": "pnpm build && tsx verify.mts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "16.1.1",
-    "next-dynamic-env": "workspace:*",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "server-only": "^0.0.1",
-    "yup": "^1.7.1",
-    "zod": "^4.3.5"
+    "@astilba/env": "0.2.2",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5"
+    "typescript": "6.0.3"
   }
 }

@@ -1,9 +1,9 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.27.0
 
 # Copy workspace root files
 COPY pnpm-lock.yaml ./
@@ -11,25 +11,21 @@ COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY tsconfig.json ./
 
-# Copy packages
-COPY packages ./packages
-
 # Copy example app
 COPY examples/with-app-router ./examples/with-app-router
 
-# Install all dependencies (needed for workspace)
-RUN pnpm install --frozen-lockfile
+# The standalone runtime always copies a public directory.
+RUN mkdir -p examples/with-app-router/public
 
-# Build the library package
-WORKDIR /app/packages/next-dynamic-env
-RUN pnpm build
+# Install the public-package consumer from the frozen workspace lockfile
+RUN pnpm install --frozen-lockfile
 
 # Build the example app
 WORKDIR /app/examples/with-app-router
 RUN pnpm build
 
 # Runtime stage
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
 
 # Copy standalone build
@@ -43,8 +39,5 @@ EXPOSE 3000
 
 # Set the correct working directory for standalone
 WORKDIR /app/examples/with-app-router
-
-# Set default PORT if not provided
-ENV PORT=3000
 
 CMD ["node", "server.js"]

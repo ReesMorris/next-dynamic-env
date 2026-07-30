@@ -1,4 +1,5 @@
 import { Client } from './client';
+import { EnvironmentProvider } from './environment-provider';
 import { Server } from './server';
 
 // Force dynamic rendering to ensure runtime environment variables are loaded
@@ -8,7 +9,7 @@ const HomePage = () => {
   return (
     <main>
       <div className='container'>
-        <h1>🚀 Next Dynamic Env Demo - App Router</h1>
+        <h1>🚀 Astilba Env Demo - App Router</h1>
         <p>
           This example demonstrates runtime environment variables using the Next
           App Router. The values below are accessible in both Server and Client
@@ -21,37 +22,34 @@ const HomePage = () => {
       </div>
 
       <Server />
-      <Client />
+      <EnvironmentProvider>
+        <Client />
+      </EnvironmentProvider>
 
       <div className='container'>
         <h2>How it works</h2>
         <p>
-          In App Router, the <code>DynamicEnvScript</code> is added in{' '}
-          <code>layout.tsx</code> to inject environment variables into the
-          window object.
+          In App Router, a Node runtime endpoint validates public deployment
+          configuration and returns inert JSON to a Client Component.
         </p>
-        <p>
-          The same <code>dynamicEnv</code> object works in both Server and
-          Client Components:
-        </p>
+        <p>Server and browser boundaries are explicit:</p>
         <ul>
           <li>
-            <strong>Server Components:</strong> Values come directly from{' '}
-            <code>process.env</code> during server-side rendering
+            <strong>Server Components:</strong> The generated server target
+            validates deployment values during server-side rendering
           </li>
           <li>
-            <strong>Client Components:</strong> Values come from{' '}
-            <code>window.__NEXT_DYNAMIC_ENV__</code> after hydration
+            <strong>Client Components:</strong> Public values arrive through a
+            same-origin, no-store JSON bootstrap after validation
           </li>
           <li>
-            <strong>Instrumentation:</strong> Available at app initialization
-            for telemetry and logging setup
+            <strong>Instrumentation:</strong> Env-dependent work shares the
+            validated bootstrap promise; it does not delay unrelated hydration
           </li>
         </ul>
         <p>
-          The App Router's component model makes this particularly elegant -
-          Server Components have direct access while Client Components
-          automatically use the injected values.
+          Private configuration remains in the server graph. The browser never
+          receives private source names or values.
         </p>
       </div>
     </main>

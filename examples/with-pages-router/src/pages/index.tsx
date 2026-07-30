@@ -1,89 +1,96 @@
-import { clientEnv } from '@/env';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { load } from '../../.astilba/env/serverDeployment.server';
+import { databaseUrlSchema, deploymentSource } from '../env-source';
+import { EnvironmentContext } from '../environment-provider';
 
-const HomePage = () => {
-  // Use state to track if we're on the client after hydration
-  const [isClient, setIsClient] = useState(false);
+export const getServerSideProps = (async () => {
+  await load(deploymentSource(), { databaseUrl: databaseUrlSchema });
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  return { props: { serverConfigurationValidated: true } };
+}) satisfies GetServerSideProps<{ serverConfigurationValidated: true }>;
+
+const HomePage = ({
+  serverConfigurationValidated
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const configuration = useContext(EnvironmentContext);
+
+  if (configuration === undefined) {
+    return (
+      <main>
+        <output aria-live='polite'>Loading deployment configuration.</output>
+      </main>
+    );
+  }
 
   return (
     <>
       <Head>
-        <title>Next Dynamic Env - Pages Router Demo</title>
-        <meta
-          name='description'
-          content='Next Dynamic Env Pages Router Example'
-        />
+        <title>Astilba Env - Pages Router Demo</title>
+        <meta name='description' content='Astilba Env Pages Router Example' />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
 
       <main>
         <div className='container'>
-          <h1>🚀 Next Dynamic Env Demo - Pages Router</h1>
+          <h1>🚀 Astilba Env Demo - Pages Router</h1>
           <p>
             This example demonstrates runtime environment variables using the
             Next Pages Router. The values below are accessible on both server
             and client.
           </p>
-          {isClient && (
-            <p>
-              Rendered on: <strong>Client (after hydration)</strong>
-            </p>
-          )}
+          <p>
+            Server configuration:{' '}
+            <strong>
+              {serverConfigurationValidated ? 'validated' : 'unavailable'}
+            </strong>
+          </p>
         </div>
 
         <div className='container'>
-          <span
-            className={`client-indicator ${isClient ? 'client' : 'server'}`}
-          >
-            {isClient ? 'Client-Side (Hydrated)' : 'Server-Side Rendered'}
+          <span className='client-indicator client'>
+            Client-side validated bootstrap
           </span>
 
           <div className='env-var'>
-            <strong>API_URL:</strong> {clientEnv.API_URL}
+            <strong>API_URL:</strong> {configuration.apiOrigin}
           </div>
 
           <div className='env-var'>
-            <strong>APP_NAME:</strong> {clientEnv.APP_NAME}
+            <strong>APP_NAME:</strong> {configuration.appName}
           </div>
 
           <div className='env-var'>
-            <strong>PORT:</strong> {clientEnv.PORT}
+            <strong>PORT:</strong> {configuration.port}
           </div>
 
           <div className='env-var'>
-            <strong>DEBUG:</strong> {clientEnv.DEBUG ? 'true' : 'false'}
+            <strong>DEBUG:</strong> {configuration.debug ? 'true' : 'false'}
           </div>
 
           <div className='env-var'>
-            <strong>FEATURES:</strong> {clientEnv.FEATURES.join(', ')}
+            <strong>FEATURES:</strong> {configuration.features.join(', ')}
           </div>
         </div>
 
         <div className='container'>
           <h2>How it works</h2>
           <p>
-            In Pages Router, the <code>DynamicEnvScript</code> is added in{' '}
-            <code>_app.tsx</code> to inject environment variables into the
-            window object.
+            In Pages Router, the Node API route validates public deployment
+            configuration and returns inert JSON to the provider in{' '}
+            <code>_app.tsx</code>.
           </p>
-          <p>
-            The same <code>dynamicEnv</code> object works on both server and
-            client:
-          </p>
+          <p>Server and browser boundaries are explicit:</p>
           <ul>
             <li>
-              <strong>Server-side:</strong> Values come from{' '}
-              <code>process.env</code>
+              <strong>Server-side:</strong> The generated target validates
+              private configuration without serialising it into props
             </li>
             <li>
-              <strong>Client-side:</strong> Values come from{' '}
-              <code>window.__NEXT_DYNAMIC_ENV__</code>
+              <strong>Client-side:</strong> Public values load from a
+              same-origin, no-store JSON bootstrap
             </li>
           </ul>
         </div>
