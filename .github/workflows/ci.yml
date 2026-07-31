@@ -21,7 +21,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10.27.0
 
@@ -76,7 +76,7 @@ jobs:
       
       - name: Setup pnpm
         if: '!contains(github.event.head_commit.message, ''chore: release package'')'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
       
       - name: Setup Node.js
         if: '!contains(github.event.head_commit.message, ''chore: release package'')'
