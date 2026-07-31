@@ -1,5 +1,11 @@
 # next-dynamic-env
 
+## 1.3.1
+
+### Patch Changes
+
+- [#87](https://github.com/ReesMorris/next-dynamic-env/pull/87) [`b8b03b1`](https://github.com/ReesMorris/next-dynamic-env/commit/b8b03b1db1966f16e247f1da772439011642c645) Thanks [@ReesMorris](https://github.com/ReesMorris)! - This final bridge marks the package as retired in favour of exact public `@astilba/env@0.2.2`; adds migration guidance; and changes no runtime behavior.
+
 ## 1.3.0
 
 ### Minor Changes
