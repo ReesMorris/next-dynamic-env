@@ -7,7 +7,7 @@ inline script with generated modules and an application-owned JSON bootstrap.
 ## Requirements
 
 - Node.js 24;
-- Next.js 16.2.12; and
+- Next.js 16.2.12;
 - React and ReactDOM 19.2.8;
 - TypeScript 6.0.3; and
 - `@astilba/env@0.2.2` installed exactly from the public npm registry.
@@ -37,8 +37,11 @@ before builds.
 - `EnvironmentProvider` in `_app.tsx` validates the same-origin response
   before rendering client code that uses public deployment values.
 
-The API response audience is the configured `APPLICATION_ORIGIN`; it is never
-derived from a request host header.
+`APPLICATION_ORIGIN` must exactly match the browser-facing canonical,
+non-localhost HTTPS origin. Local development needs a locally trusted HTTPS
+hostname and TLS proxy, such as `https://app.example.test`; default
+`localhost` is not valid. The API response audience is never derived from a
+request host header.
 
 ## Verify the migration
 

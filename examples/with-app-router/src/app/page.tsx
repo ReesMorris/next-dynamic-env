@@ -12,8 +12,8 @@ const HomePage = () => {
         <h1>🚀 Astilba Env Demo - App Router</h1>
         <p>
           This example demonstrates runtime environment variables using the Next
-          App Router. The values below are accessible in both Server and Client
-          Components.
+          App Router. Public values are read separately in Server Components and
+          bootstrapped to Client Components; private values remain server-only.
         </p>
         <p>
           Also check the console output to see it running in{' '}

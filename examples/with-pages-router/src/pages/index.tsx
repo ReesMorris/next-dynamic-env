@@ -38,8 +38,8 @@ const HomePage = ({
           <h1>🚀 Astilba Env Demo - Pages Router</h1>
           <p>
             This example demonstrates runtime environment variables using the
-            Next Pages Router. The values below are accessible on both server
-            and client.
+            Next Pages Router. Public values render client-side from a validated
+            same-origin bootstrap; the server sends only validation status.
           </p>
           <p>
             Server configuration:{' '}
@@ -80,7 +80,8 @@ const HomePage = ({
           <p>
             In Pages Router, the Node API route validates public deployment
             configuration and returns inert JSON to the provider in{' '}
-            <code>_app.tsx</code>.
+            <code>_app.tsx</code>; <code>getServerSideProps</code> sends only
+            validation status.
           </p>
           <p>Server and browser boundaries are explicit:</p>
           <ul>

@@ -12,10 +12,11 @@ export const GET = (): NextResponse => {
   const headers = { 'Cache-Control': 'private, no-store' };
 
   if (!result.ok) {
-    return NextResponse.json(
-      { diagnostics: result.diagnostics, ok: false },
-      { headers, status: 500 }
+    console.error(
+      'Astilba Env bootstrap validation failed.',
+      result.diagnostics
     );
+    return NextResponse.json({ ok: false }, { headers, status: 500 });
   }
 
   return NextResponse.json(

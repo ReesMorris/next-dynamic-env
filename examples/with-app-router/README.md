@@ -8,7 +8,7 @@ configuration.
 ## Requirements
 
 - Node.js 24;
-- Next.js 16.2.12; and
+- Next.js 16.2.12;
 - React and ReactDOM 19.2.8;
 - TypeScript 6.0.3; and
 - `@astilba/env@0.2.2` installed exactly from the public npm registry.
@@ -42,8 +42,11 @@ output drift fail the build.
 - `instrumentation-client.ts` shares the provider's readiness promise only for
   Env-dependent instrumentation. It does not delay unrelated hydration.
 
-`APPLICATION_ORIGIN` is a configured canonical origin. The endpoint never
-derives the audience from `Host` or forwarded headers.
+`APPLICATION_ORIGIN` must exactly match the browser-facing canonical,
+non-localhost HTTPS origin. Local development needs a locally trusted HTTPS
+hostname and TLS proxy, such as `https://app.example.test`; default
+`localhost` is not valid. The endpoint never derives the audience from `Host`
+or forwarded headers.
 
 ## Run once; deploy twice
 

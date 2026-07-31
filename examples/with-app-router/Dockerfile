@@ -17,8 +17,8 @@ COPY examples/with-app-router ./examples/with-app-router
 # The standalone runtime always copies a public directory.
 RUN mkdir -p examples/with-app-router/public
 
-# Install the public-package consumer from the frozen workspace lockfile
-RUN pnpm install --frozen-lockfile
+# Install the copied public-package consumer from the frozen workspace lockfile
+RUN pnpm --filter with-app-router install --frozen-lockfile
 
 # Build the example app
 WORKDIR /app/examples/with-app-router

@@ -167,6 +167,22 @@ for (const invalidPort of ['1.5', '9007199254740992']) {
   );
 }
 
+for (const applicationOrigin of [
+  'http://app.example.com',
+  'https://localhost:3000'
+]) {
+  assert.equal(
+    checkBrowser(
+      deploymentSource({
+        ...profiles[0],
+        APPLICATION_ORIGIN: applicationOrigin
+      })
+    ).ok,
+    false,
+    'APPLICATION_ORIGIN must be a canonical non-localhost HTTPS origin'
+  );
+}
+
 type ProjectionDecoder = (
   input: Readonly<Record<string, unknown>>,
   failure: (code: string) => never
@@ -199,8 +215,22 @@ if (invalidServer.ok) {
 }
 const diagnostics = JSON.stringify(invalidServer.diagnostics);
 assert.equal(diagnostics.includes(invalidCanary), false);
-assert.equal(diagnostics.includes(String(invalidCanary.length)), false);
-assert.ok(invalidServer.diagnostics.length >= 2);
+assert.deepEqual(invalidServer.diagnostics, [
+  {
+    code: 'ENV_INVALID_VALUE',
+    codec: 'astilba.env.opaque/v1',
+    consumer: 'server',
+    entry: 'databaseUrl',
+    lifecycle: 'deployment'
+  },
+  {
+    code: 'ENV_INVALID_VALUE',
+    codec: 'astilba.env.safe-integer-decimal/v1',
+    consumer: 'server',
+    entry: 'port',
+    lifecycle: 'deployment'
+  }
+]);
 
 const validSource = bootstrap(
   validatedProfiles[0],
@@ -310,6 +340,7 @@ const gitignore = await readFile('.gitignore', 'utf8');
 assert.match(gitignore, /^\.env\*$/m);
 assert.match(gitignore, /^!\.env\.example$/m);
 const environmentExample = await readFile('.env.example', 'utf8');
+assert.match(environmentExample, /^APP_NAME="Pages Router Example"$/m);
 assert.match(environmentExample, /^APPLICATION_PORT=3001$/m);
 assert.equal(/^PORT=/m.test(environmentExample), false);
 const environmentDeclaration = await readFile('astilba.env.mts', 'utf8');
@@ -319,6 +350,12 @@ assert.equal(/port: ['"]PORT['"]/.test(environmentDeclaration), false);
 const route = await readFile('src/pages/api/env.ts', 'utf8');
 assert.match(route, /runtime: ['"]nodejs['"]/);
 assert.match(route, /Cache-Control.*private, no-store/);
+assert.match(route, /console\.error\([\s\S]*?result\.diagnostics[\s\S]*?\)/);
+assert.match(route, /response\.status\(500\)\.json\(\{ ok: false \}\)/);
+assert.equal(
+  /response\.status\(500\)\.json\([^)]*diagnostics/s.test(route),
+  false
+);
 assert.equal(/headers\.get\(|forwarded|host/i.test(route), false);
 
 await assert.rejects(() =>

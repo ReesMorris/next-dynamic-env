@@ -14,7 +14,11 @@ export default function handler(
   response.setHeader('Cache-Control', 'private, no-store');
 
   if (!result.ok) {
-    response.status(500).json({ diagnostics: result.diagnostics, ok: false });
+    console.error(
+      'Astilba Env bootstrap validation failed.',
+      result.diagnostics
+    );
+    response.status(500).json({ ok: false });
     return;
   }
 
