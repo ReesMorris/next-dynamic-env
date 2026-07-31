@@ -27,8 +27,8 @@ importers:
         specifier: ^16.2.7
         version: 16.2.7
       syncpack:
-        specifier: ^14.0.0-alpha.19
-        version: 14.0.0-alpha.19
+        specifier: ^15.3.2
+        version: 15.3.2
       turbo:
         specifier: ^2.7.3
         version: 2.7.3
@@ -183,8 +183,8 @@ packages:
       vite:
         optional: true
 
-  '@babel/code-frame@7.27.1':
-    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
+  '@babel/code-frame@7.29.7':
+    resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -195,6 +195,10 @@ packages:
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-validator-identifier@7.29.7':
+    resolution: {integrity: sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/parser@7.28.5':
     resolution: {integrity: sha512-KKBU1VGYR7ORr3At5HAtUQ+TV3SzRCXmA/8OdDZiLDBIZxVyzXuztPjfLd3BV1PRAQGCMWWSHYhL0F8d5uHBDQ==}
     engines: {node: '>=6.0.0'}
@@ -202,6 +206,10 @@ packages:
 
   '@babel/runtime@7.28.3':
     resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.28.5':
@@ -2129,38 +2137,48 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  syncpack-darwin-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-Xw4Q86Cf/55hE4xYxYZCEr98CqPpCF1IXPvr8EI+grAb44cE3BeQsi7SnmQNMGQ9Nibu2kr7D1fxGpQWdR+odg==}
+  syncpack-darwin-arm64@15.3.2:
+    resolution: {integrity: sha512-rQwZOvWJbvUzhBySbKnvs+F5khmdkH2W/kTZo+zz6UfH651K9z2fiOYlcpDPX0L97m566gRxVmOr930ygB97ZQ==}
     cpu: [arm64]
     os: [darwin]
 
-  syncpack-darwin-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-e+10rBn13KEfWYNY7/GUTnfv7XrvmRhTMbl+4m922/O2fx2v515mbHx5ku1KvN3Gz5Up3y459bslS9+aIx0kCA==}
+  syncpack-darwin-x64@15.3.2:
+    resolution: {integrity: sha512-91CWe9Pamfmlm2nY8bCL5z8GYOafGJUm/nQqtvaQDZ9SS25c6Gn8LDfRu6JSKV0dcI1zOH3EiRCM0K/kn9Mpiw==}
     cpu: [x64]
     os: [darwin]
 
-  syncpack-linux-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-X8XeQ06uQ8ZyuK1hSXaHBneBUGSfe0/eA9ZCoARQr6TD6fF3CT45nDSVtV9y3qrmL3S2u4Rc0/wW6J5VbpIi/Q==}
+  syncpack-linux-arm64-musl@15.3.2:
+    resolution: {integrity: sha512-IzI4Sr1rFDuF7FFbZ+ti+qA2/0Rp/aGNgzoUzNH28wYJkJMv9KBBr3Nygc1jsoO1+XE1JkYsXkJHuSFrwiwtgA==}
     cpu: [arm64]
     os: [linux]
 
-  syncpack-linux-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-eRaJcflvzZhawn67/0QZPS6VtOu2b8sl5DlpdmumgZ7yb1r77Q0Lxf5xHV3juYxnnL8xsZ8svXTvZMSpypsQkg==}
+  syncpack-linux-arm64@15.3.2:
+    resolution: {integrity: sha512-eApeUFLb8yFHAFnCyHicDieTBW0eR3HsaKSWPMmz+VOQOpZYl0cmqbRLtunsYN6OykRi9Sl1faYjKmyETow7Gg==}
+    cpu: [arm64]
+    os: [linux]
+
+  syncpack-linux-x64-musl@15.3.2:
+    resolution: {integrity: sha512-dohyuYgUVHdSFz1KYW/XngyYSiSV3tarroYRsloYsT8bcSStkh2vJVBht0eMl1OFTh3Hb6lNEC12Pgtw4gWTcg==}
     cpu: [x64]
     os: [linux]
 
-  syncpack-windows-arm64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-JRpr1xg4xJCdeitLjohtIN1d6njxE0/r/X2KVHUAAzUVSvl0y3OIk8j5QS9/qN8toOLwjO209zdRx03GNA+SGw==}
+  syncpack-linux-x64@15.3.2:
+    resolution: {integrity: sha512-xrzBZx3DjKoece2h3Olv/Y/U7b1eNorWTMiF407m0tO5KJp5u926TMeHlldaA5GRCkVJBe5VaI33WYTJF753oQ==}
+    cpu: [x64]
+    os: [linux]
+
+  syncpack-windows-arm64@15.3.2:
+    resolution: {integrity: sha512-ZGjVpyS8PW6Y69HyXOb8RYVWRQ+hlRklqdgOp+x+eqrCRidGho8z2nN5tleMGzcaMC7hg+qSPFh5u6Fy/BXr4w==}
     cpu: [arm64]
     os: [win32]
 
-  syncpack-windows-x64@14.0.0-alpha.19:
-    resolution: {integrity: sha512-kxCMO0VJQU8M/5CfWD1v566QISzbQmMBkuQN/zrfDxQJa/Q0jkz+VeqJuUVL9m4bmPBik9FlpatCNPmHEV5hMA==}
+  syncpack-windows-x64@15.3.2:
+    resolution: {integrity: sha512-9zKWNXGhd3rryQjcpBjs02pKgvIzuz3PUS+vKL4vWnDu5VoHad4e6TzL4pvn+VfAm4wXzcuS9fZkxLBEMPLerw==}
     cpu: [x64]
     os: [win32]
 
-  syncpack@14.0.0-alpha.19:
-    resolution: {integrity: sha512-gFOMbycrzlGpYgnVwiKzW9p8y9cUPTDrfiofMFPt70/yVOwCBuEYZM/wfdkXVhZd7HwQQT0+MEYHiO+HqyaH2w==}
+  syncpack@15.3.2:
+    resolution: {integrity: sha512-RKYfXFQlrIWosTheNbyJg3xHNjTDrW2mOvwxAz3XGghrUDN4hDjhKPCTAQrUtGZw9hNeIr37qRO3/+EP927Vtg==}
     engines: {node: '>=14.17.0'}
     hasBin: true
 
@@ -2437,9 +2455,9 @@ snapshots:
 
   '@astilba/env@0.2.2': {}
 
-  '@babel/code-frame@7.27.1':
+  '@babel/code-frame@7.29.7':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -2447,11 +2465,15 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.28.5': {}
 
+  '@babel/helper-validator-identifier@7.29.7': {}
+
   '@babel/parser@7.28.5':
     dependencies:
       '@babel/types': 7.28.5
 
   '@babel/runtime@7.28.3': {}
+
+  '@babel/runtime@7.29.7': {}
 
   '@babel/types@7.28.5':
     dependencies:
@@ -3152,8 +3174,8 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.28.3
+      '@babel/code-frame': 7.29.7
+      '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -4177,34 +4199,40 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  syncpack-darwin-arm64@14.0.0-alpha.19:
+  syncpack-darwin-arm64@15.3.2:
     optional: true
 
-  syncpack-darwin-x64@14.0.0-alpha.19:
+  syncpack-darwin-x64@15.3.2:
     optional: true
 
-  syncpack-linux-arm64@14.0.0-alpha.19:
+  syncpack-linux-arm64-musl@15.3.2:
     optional: true
 
-  syncpack-linux-x64@14.0.0-alpha.19:
+  syncpack-linux-arm64@15.3.2:
     optional: true
 
-  syncpack-windows-arm64@14.0.0-alpha.19:
+  syncpack-linux-x64-musl@15.3.2:
     optional: true
 
-  syncpack-windows-x64@14.0.0-alpha.19:
+  syncpack-linux-x64@15.3.2:
     optional: true
 
-  syncpack@14.0.0-alpha.19:
-    dependencies:
-      tsx: 4.23.1
+  syncpack-windows-arm64@15.3.2:
+    optional: true
+
+  syncpack-windows-x64@15.3.2:
+    optional: true
+
+  syncpack@15.3.2:
     optionalDependencies:
-      syncpack-darwin-arm64: 14.0.0-alpha.19
-      syncpack-darwin-x64: 14.0.0-alpha.19
-      syncpack-linux-arm64: 14.0.0-alpha.19
-      syncpack-linux-x64: 14.0.0-alpha.19
-      syncpack-windows-arm64: 14.0.0-alpha.19
-      syncpack-windows-x64: 14.0.0-alpha.19
+      syncpack-darwin-arm64: 15.3.2
+      syncpack-darwin-x64: 15.3.2
+      syncpack-linux-arm64: 15.3.2
+      syncpack-linux-arm64-musl: 15.3.2
+      syncpack-linux-x64: 15.3.2
+      syncpack-linux-x64-musl: 15.3.2
+      syncpack-windows-arm64: 15.3.2
+      syncpack-windows-x64: 15.3.2
 
   term-size@2.2.1: {}
 

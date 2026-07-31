@@ -34,7 +34,7 @@
     "@types/node": "^25",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "syncpack": "^14.0.0-alpha.19",
+    "syncpack": "^15.3.2",
     "turbo": "^2.7.3",
     "typescript": "6.0.3",
     "zod": "^4.3.5"
