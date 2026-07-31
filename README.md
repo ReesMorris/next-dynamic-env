@@ -4,6 +4,11 @@
 [![npm downloads](https://img.shields.io/npm/dm/next-dynamic-env.svg)](https://www.npmjs.com/package/next-dynamic-env)
 [![license](https://img.shields.io/npm/l/next-dynamic-env.svg)](https://github.com/reesmorris/next-dynamic-env/blob/main/LICENSE)
 
+> [!IMPORTANT]
+> This package is no longer actively maintained. New and existing projects should migrate to exact public [`@astilba/env@0.2.2`](https://astilba.com/docs/env/overview/) with the [stable migration guide](https://astilba.com/docs/env/migrate-from-next-dynamic-env/).
+>
+> This is an architectural migration; not a package rename or compatibility shim. Existing `next-dynamic-env` versions, tarballs, and history will remain available. This final bridge changes no runtime API or behavior.
+
 Type-safe runtime environment variables for Next.js – no more rebuilding for config changes!
 
 ## Why?
