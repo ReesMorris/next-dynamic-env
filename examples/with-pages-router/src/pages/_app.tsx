@@ -1,13 +1,11 @@
-import { clientEnv } from '@/env';
 import type { AppProps } from 'next/app';
-import { DynamicEnvScript } from 'next-dynamic-env';
 import '@/globals.css';
+import { EnvironmentProvider } from '../environment-provider';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <DynamicEnvScript clientEnv={clientEnv} />
+    <EnvironmentProvider>
       <Component {...pageProps} />
-    </>
+    </EnvironmentProvider>
   );
 }

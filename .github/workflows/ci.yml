@@ -10,6 +10,48 @@ permissions:
   contents: read
 
 jobs:
+  env-migration:
+    name: Env migration (Node 24)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check committed Env generation
+        run: |
+          pnpm --filter with-app-router env:check
+          pnpm --filter with-pages-router env:check
+
+      - name: Typecheck and lint Env consumers
+        run: |
+          pnpm --filter with-app-router check
+          pnpm --filter with-pages-router check
+
+      - name: Build and verify Env consumers
+        run: |
+          pnpm --filter with-app-router test
+          pnpm --filter with-pages-router test
+
+      - name: Build App Router Docker image
+        run: docker build --file examples/with-app-router/Dockerfile .
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -21,6 +63,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       
       # Skip tests for release commits but still report success
       - name: Skip tests for release commits

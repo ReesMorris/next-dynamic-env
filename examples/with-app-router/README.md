@@ -1,65 +1,96 @@
-# Next Dynamic Env - App Router Example
+# Astilba Env; App Router example
 
-This example demonstrates how to use `next-dynamic-env` with Next.js App Router.
+This example replaces `next-dynamic-env`'s inline script, globals, proxies,
+and polling with a generated Astilba Env contract and an application-owned
+bootstrap route. It keeps one Next.js artifact independent of deployment
+configuration.
 
-## Features
+## Requirements
 
-- Runtime environment variables that work in both Server and Client Components
-- Type-safe access with TypeScript
-- Zod validation for environment variables
-- Automatic client-side injection via `DynamicEnvScript`
-- Support for instrumentation files
+- Node.js 24;
+- Next.js 16.2.12;
+- React and ReactDOM 19.2.8;
+- TypeScript 6.0.3; and
+- `@astilba/env@0.2.2` installed exactly from the public npm registry.
 
-## Setup
+## Configure and generate
 
-1. Install dependencies:
-```bash
+Copy `.env.example` to a local `.env` for development. Do not supply a
+deployment configuration while building the Docker image.
+
+```sh
 pnpm install
+pnpm env:generate
+pnpm env:check
+pnpm build
 ```
 
-2. Run the development server:
-```bash
-pnpm dev
+`astilba.env.mts` declares public and private deployment entries without
+reading them. The committed `.astilba/env/` directory contains generated,
+application-owned server and browser modules. `env:check` makes generated
+output drift fail the build.
+
+## Runtime boundaries
+
+- `src/app/server/server.tsx` loads the generated server target and can access
+  validated private configuration without serialising it into the browser.
+- `src/app/api/env/route.ts` is a force-dynamic Node route. It validates the
+  public target and returns the exact bootstrap envelope with
+  `Cache-Control: private, no-store`.
+- `EnvironmentProvider` loads and validates that same-origin JSON response
+  before mounting client code that depends on configuration.
+- `instrumentation-client.ts` shares the provider's readiness promise only for
+  Env-dependent instrumentation. It does not delay unrelated hydration.
+
+`APPLICATION_ORIGIN` must exactly match the browser-facing canonical,
+non-localhost HTTPS origin. Local development needs a locally trusted HTTPS
+hostname and TLS proxy, such as `https://app.example.test`; default
+`localhost` is not valid. The endpoint never derives the audience from `Host`
+or forwarded headers.
+
+## Run once; deploy twice
+
+Build without deployment values, then run the same standalone artifact with
+different values:
+
+Run the build from the monorepo root because the Dockerfile uses the frozen
+workspace lockfile while copying only this public-package consumer:
+
+```sh
+docker build -f examples/with-app-router/Dockerfile \
+  -t astilba-env-app-router .
+docker run --rm -p 3000:3000 \
+  -e API_URL=https://api.staging.example.com \
+  -e APPLICATION_ORIGIN=https://app.staging.example.com \
+  -e DATABASE_URL=postgres://user:password@db/staging \
+  -e SECRET_KEY=staging-secret \
+  astilba-env-app-router
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000)
+The public browser values change at the JSON boundary. Private source names
+and values stay out of the browser graph and response.
 
-## How it works
+## Verify the migration
 
-1. **Environment Configuration** (`dynamic-env.ts`):
-   - Defines environment variables with Zod validation
-   - Provides type-safe access throughout the app
+```sh
+pnpm test
+```
 
-2. **Script Injection** (`app/layout.tsx`):
-   - `DynamicEnvScript` component injects env vars into the window object
-   - Makes variables available in Client Components
+The example verifier checks valid, missing, and malformed bootstrap behavior;
+the trusted configured audience; legacy graph removal; private browser-graph
+exclusion; shared instrumentation readiness; and two deployment profiles.
 
-3. **Usage**:
-   - **Server Components** (`app/server.tsx`): Direct access via `dynamicEnv`
-   - **Client Components** (`app/client.tsx`): Access after hydration via `dynamicEnv`
-   - **Instrumentation** (`instrumentation-client.ts`): Available at app initialization
+## Intentional migration changes
 
-## Key Files
+This is not a package rename. It removes `createDynamicEnv`, client and server
+proxies, `DynamicEnvScript`, `waitForEnv`, the mutable browser global, implicit
+Next build bypass, and warning-only validation. Built-in Env codecs replace
+the useful public number, Boolean, list, URL, default, and empty-value
+outcomes.
 
-- `dynamic-env.ts` - Environment variable configuration
-- `src/app/layout.tsx` - Root layout with DynamicEnvScript
-- `src/app/client.tsx` - Client Component example
-- `src/app/server.tsx` - Server Component example
-- `instrumentation-client.ts` - Client-side instrumentation example
-- `.env` - Environment variables (not committed)
-
-## Environment Variables
-
-The example uses these environment variables:
-
-- `APP_NAME` - Application name
-- `API_URL` - API endpoint URL
-- `PORT` - Port number (transformed to number)
-- `DEBUG` - Debug mode (transformed to boolean)
-- `FEATURES` - Feature flags (transformed to array)
-
-## App Router Specific Features
-
-- **Server Components**: Environment variables are available directly without any special handling
-- **Client Components**: Use the `"use client"` directive and access variables after hydration
-- **Instrumentation**: Access environment variables during app initialization for telemetry or logging setup
+The custom database URL rule is a synchronous private Standard Schema
+validator on the Node target. Asynchronous opaque validators are unsupported;
+opaque validators cannot enter the browser or Cloudflare Workers path. This
+example does not claim Next.js Edge Runtime support. See the
+[public migration guide](https://astilba.com/docs/env/migrate-from-next-dynamic-env/)
+for the complete replacement boundary.
