@@ -1,7 +1,7 @@
 {
   "name": "next-dynamic-env",
   "version": "1.3.0",
-  "description": "Runtime environment variables for dockerized Next.js apps",
+  "description": "Retired; migrate to @astilba/env@0.2.2",
   "author": "Rees Morris",
   "license": "MIT",
   "keywords": [
@@ -14,7 +14,7 @@
     "variables"
   ],
   "repository": "https://github.com/ReesMorris/next-dynamic-env",
-  "homepage": "https://github.com/ReesMorris/next-dynamic-env#readme",
+  "homepage": "https://astilba.com/docs/env/migrate-from-next-dynamic-env/",
   "bugs": "https://github.com/ReesMorris/next-dynamic-env/issues",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
