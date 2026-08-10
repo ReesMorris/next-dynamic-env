@@ -42,8 +42,8 @@ importers:
   examples/with-app-router:
     dependencies:
       '@astilba/env':
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       next:
         specifier: 16.2.12
         version: 16.2.12(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -79,8 +79,8 @@ importers:
   examples/with-pages-router:
     dependencies:
       '@astilba/env':
-        specifier: 0.2.2
-        version: 0.2.2
+        specifier: 0.2.3
+        version: 0.2.3
       next:
         specifier: 16.2.12
         version: 16.2.12(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -173,8 +173,8 @@ packages:
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
 
-  '@astilba/env@0.2.2':
-    resolution: {integrity: sha512-B6UaBdrKPRPvwNzo5CIhWtBiZjijxxAObj62TIA8Z52HBwVYyy//IjcxVNe2e+TUvmh0cFsg2WzvCBHrOylrng==}
+  '@astilba/env@0.2.3':
+    resolution: {integrity: sha512-mjAXvvSBzHp2jZlEP8jytUuyIP3xPNpDtrdL7vh1NY02L20/jkxEWw01fiDVJCgWISNVU3RvzhswYwcHWxJS0A==}
     engines: {node: '>=22.14.0 <23.0.0 || >=24.0.0 <25.0.0 || >=26.0.0 <27.0.0'}
     hasBin: true
     peerDependencies:
@@ -183,8 +183,8 @@ packages:
       vite:
         optional: true
 
-  '@babel/code-frame@7.27.1':
-    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
+  '@babel/code-frame@7.29.7':
+    resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-string-parser@7.27.1':
@@ -195,6 +195,10 @@ packages:
     resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/helper-validator-identifier@7.29.7':
+    resolution: {integrity: sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/parser@7.28.5':
     resolution: {integrity: sha512-KKBU1VGYR7ORr3At5HAtUQ+TV3SzRCXmA/8OdDZiLDBIZxVyzXuztPjfLd3BV1PRAQGCMWWSHYhL0F8d5uHBDQ==}
     engines: {node: '>=6.0.0'}
@@ -202,6 +206,10 @@ packages:
 
   '@babel/runtime@7.28.3':
     resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.28.5':
@@ -2435,11 +2443,11 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@astilba/env@0.2.2': {}
+  '@astilba/env@0.2.3': {}
 
-  '@babel/code-frame@7.27.1':
+  '@babel/code-frame@7.29.7':
     dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
@@ -2447,11 +2455,15 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.28.5': {}
 
+  '@babel/helper-validator-identifier@7.29.7': {}
+
   '@babel/parser@7.28.5':
     dependencies:
       '@babel/types': 7.28.5
 
   '@babel/runtime@7.28.3': {}
+
+  '@babel/runtime@7.29.7': {}
 
   '@babel/types@7.28.5':
     dependencies:
@@ -3152,8 +3164,8 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.27.1
-      '@babel/runtime': 7.28.3
+      '@babel/code-frame': 7.29.7
+      '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
