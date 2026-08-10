@@ -26,6 +26,6 @@
     "@types/react-dom": "^19",
     "esbuild": "0.25.9",
     "tsx": "^4.21.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }
