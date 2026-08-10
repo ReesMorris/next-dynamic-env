@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@astilba/env": "0.2.2",
-    "next": "16.2.12",
+    "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
