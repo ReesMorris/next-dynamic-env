@@ -37,7 +37,7 @@
     "syncpack": "^14.0.0-alpha.19",
     "turbo": "^2.7.3",
     "typescript": "6.0.3",
-    "zod": "^4.3.5"
+    "zod": "^4.4.3"
   },
   "packageManager": "pnpm@10.27.0"
 }
